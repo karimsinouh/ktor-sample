@@ -1,11 +1,12 @@
-FROM gradle:7-jdk11 AS build
-COPY --chown=gradle:gradle . /home/gradle/src
-COPY gradle/libs.versions.toml gradle/libs.versions.toml
-WORKDIR /home/gradle/src
-RUN gradle buildFatJar --no-daemon
+# Use a multi-stage build
+FROM gradle:8.3-jdk17 AS builder
+WORKDIR /app
+COPY . .
+RUN gradle shadowJar
 
-FROM openjdk:11
-EXPOSE 8080:8080
-RUN mkdir /app
-COPY --from=build /home/gradle/src/build/libs/*.jar /app/ktor-sample.jar
-ENTRYPOINT ["java","-jar","/app/ktor-sample.jar"]
+# Use a lightweight JDK image
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+COPY --from=builder /app/build/libs/*.jar app.jar
+EXPOSE 8080
+CMD ["java", "-jar", "app.jar"]
