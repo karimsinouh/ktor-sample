@@ -1,0 +1,28 @@
+# Use the official OpenJDK image as the base image
+FROM openjdk:17-jdk-slim AS build
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the build files from your project to the container
+COPY build.gradle.kts .
+COPY settings.gradle.kts .
+COPY src ./src
+
+# Build the project
+RUN ./gradlew build --no-daemon
+
+# Use a smaller base image for the final stage
+FROM openjdk:17-jdk-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the built JAR file from the build stage
+COPY --from=build /app/build/libs/ktor-sample.jar ./app.jar
+
+# Expose the port your Ktor application will run on
+EXPOSE 8080
+
+# Command to run your application
+ENTRYPOINT ["java", "-jar", "app.jar"]
