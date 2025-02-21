@@ -1,7 +1,8 @@
 package com.example
 
-import com.example.messaging.presentation.messagesRouting
+import com.example.routes.messaging.presentation.messagesRouting
 import com.example.di.DIModule
+import com.example.routes.users.presentation.usersRouting
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
@@ -23,5 +24,7 @@ fun Application.configureRouting(module:DIModule) {
         }
 
         messagesRouting(module.chatRepository)
+
+        usersRouting(module.usersRepository)
     }
 }

@@ -1,14 +1,15 @@
 package com.example.di
 
-import com.example.messaging.data.GenerateAIResponse
-import com.example.messaging.data.MessagesDAO
+import com.example.routes.messaging.data.GenerateAIResponse
+import com.example.routes.messaging.data.MessagesDAO
 import com.example.messaging.data.SendWhatsappMessage
-import com.example.messaging.model.ChatRepository
-import com.example.messaging.model.MessagesRepository
+import com.example.routes.messaging.model.ChatRepository
+import com.example.routes.messaging.model.MessagesRepository
+import com.example.routes.users.data.UsersDAO
+import com.example.routes.users.model.UsersRepository
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.plugins.contentnegotiation.*
 import kotlinx.serialization.json.Json
 
 class DIModule {
@@ -28,6 +29,9 @@ class DIModule {
         MessagesDAO()
     }
 
+    private val usersDao by lazy {
+        UsersDAO()
+    }
     val generateAIResponse by lazy {
         GenerateAIResponse(client)
     }
@@ -42,6 +46,10 @@ class DIModule {
 
     val chatRepository by lazy {
         ChatRepository(messagesRepository,generateAIResponse,sendWhatsappMessage)
+    }
+
+    val usersRepository by lazy {
+        UsersRepository(usersDao)
     }
 
 }

@@ -1,4 +1,4 @@
-package com.example.chat.model
+package com.example.routes.messaging.model
 
 import org.jetbrains.exposed.sql.Table
 

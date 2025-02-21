@@ -1,10 +1,9 @@
-package com.example.messaging.data
+package com.example.routes.messaging.data
 
-import com.example.database.model.User
-import com.example.messaging.model.AIMessage
-import com.example.messaging.model.AIMessage.Companion.ROLE_DEVELOPER
-import com.example.messaging.model.MessageModel
-import com.example.messaging.model.toAIMessages
+import com.example.routes.messaging.data.GenerateAIResponse.AIMessage.Companion.ROLE_DEVELOPER
+import com.example.routes.users.model.UserModel
+import com.example.routes.messaging.model.MessageModel
+import com.example.routes.messaging.model.toAIMessages
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -17,7 +16,7 @@ class GenerateAIResponse(private val client:HttpClient) {
     private val model="gpt-4o-mini"
 
     suspend operator fun invoke(
-        user:User?=null,
+        user: UserModel?=null,
         messages:List<MessageModel>,
         onSuccess:suspend (String)->Unit,
         onFailure:suspend (String)->Unit,
@@ -35,12 +34,12 @@ class GenerateAIResponse(private val client:HttpClient) {
                     append(HttpHeaders.ContentType,"application/json")
                     append(HttpHeaders.Authorization,"Bearer $key")
                 }
-                val body=RequestBody(model=model,messages=recentMessages)
+                val body= RequestBody(model=model,messages=recentMessages)
                 setBody(body)
             }
 
             if (response.status.value==200){
-                val responseBody:ResponseBody=response.body()
+                val responseBody: ResponseBody =response.body()
                 val choices=responseBody.choices
                 if (choices.isEmpty())
                     onFailure("Empty choices")
@@ -60,7 +59,7 @@ class GenerateAIResponse(private val client:HttpClient) {
 
     }
 
-    private fun getTrainingMessage(user: User?):AIMessage{
+    private fun getTrainingMessage(user: UserModel?): AIMessage {
         val trainingMessageBuilder=StringBuilder()
         trainingMessageBuilder.apply {
             append("You're an assistant integrated in Whatsapp. ")
@@ -68,11 +67,23 @@ class GenerateAIResponse(private val client:HttpClient) {
             if (user!=null)
                 append("Here's some information about the customer: $user ")
         }
-        val trainingMessage=AIMessage(
+        val trainingMessage= AIMessage(
             role = ROLE_DEVELOPER,
             content = trainingMessageBuilder.toString()
         )
         return trainingMessage
+    }
+
+    @Serializable
+    data class AIMessage(
+        val role:String,
+        val content:String
+    ){
+        companion object{
+            const val ROLE_USER="user"
+            const val ROLE_ASSISTANT="assistant"
+            const val ROLE_DEVELOPER="developer"
+        }
     }
 
     @Serializable
@@ -83,13 +94,13 @@ class GenerateAIResponse(private val client:HttpClient) {
 
     @Serializable
     data class ResponseBody(
-        val error:APIError?=null,
+        val error: APIError?=null,
         val choices:List<APIChoice>
     )
 
     @Serializable
     data class APIChoice(
-        val message:AIMessage,
+        val message: AIMessage,
     )
     @Serializable
     data class APIError(

@@ -1,6 +1,6 @@
 package com.example.messaging.data
 
-import com.example.messaging.data.GenerateAIResponse.ResponseBody
+import com.example.routes.messaging.data.GenerateAIResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -73,6 +73,6 @@ class SendWhatsappMessage(
 
     @Serializable
     data class WhatsappResponseBody(
-        val error:GenerateAIResponse.APIError?=null,
+        val error: GenerateAIResponse.APIError?=null,
     )
 }

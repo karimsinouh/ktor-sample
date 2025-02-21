@@ -1,10 +1,10 @@
-package com.example.messaging.data
+package com.example.routes.messaging.data
 
-import com.example.messaging.model.MessageModel
-import com.example.chat.model.MessageTable
-import com.example.chat.model.MessageTable.phoneNumber
-import com.example.chat.model.MessageTable.timestamp
-import com.example.messaging.model.toMessage
+import com.example.routes.messaging.model.MessageModel
+import com.example.routes.messaging.model.MessageTable
+import com.example.routes.messaging.model.MessageTable.phoneNumber
+import com.example.routes.messaging.model.MessageTable.timestamp
+import com.example.routes.messaging.model.toMessage
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insert

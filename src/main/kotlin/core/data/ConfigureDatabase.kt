@@ -1,4 +1,4 @@
-package com.example.database
+package com.example.core.data
 
 import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.Database

@@ -1,10 +1,10 @@
-package com.example.messaging.presentation
+package com.example.routes.messaging.presentation
 
 import com.example.core.errorResponse
 import com.example.core.successResponse
-import com.example.messaging.model.AIMessage
-import com.example.messaging.model.ChatRepository
-import com.example.messaging.model.MessageModel
+import com.example.routes.messaging.data.GenerateAIResponse
+import com.example.routes.messaging.model.ChatRepository
+import com.example.routes.messaging.model.MessageModel
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -13,7 +13,7 @@ import io.ktor.server.routing.*
  * Receives messages from Whatsapp API and.
  * Generates Messages from OpenAI.
  * Stores Messages from both the user and AI in the database.
- * Sends a message back to users via Whatsapp API.
+ * Sends a message back to routes.users via Whatsapp API.
  * */
 fun Routing.messagesReceiver(
     repo: ChatRepository
@@ -36,7 +36,7 @@ fun Routing.messagesReceiver(
             onSuccess = {aiResponse->
 
                 //store the AI response in the database
-                repo.messages.insert(AIMessage.ROLE_ASSISTANT,message.phoneNumber,aiResponse)
+                repo.messages.insert(GenerateAIResponse.AIMessage.ROLE_ASSISTANT,message.phoneNumber,aiResponse)
 
                 //send the AI response back to the user via WhatsApp API
                 repo.sendWhatsappMessage(

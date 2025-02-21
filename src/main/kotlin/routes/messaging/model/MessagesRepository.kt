@@ -1,6 +1,7 @@
-package com.example.messaging.model
+package com.example.routes.messaging.model
 
-import com.example.messaging.data.MessagesDAO
+import com.example.routes.messaging.data.MessagesDAO
+import com.example.routes.messaging.model.MessageModel
 
 class MessagesRepository(private val dao: MessagesDAO) {
 

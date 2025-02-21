@@ -1,4 +1,4 @@
-package com.example.messaging.model
+package com.example.routes.messaging.model
 
 import kotlinx.serialization.Serializable
 

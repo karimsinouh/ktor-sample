@@ -14,6 +14,16 @@ suspend fun RoutingContext.errorResponse(error:String){
 suspend fun RoutingContext.successResponse(message:String){
     call.respond(
         HttpStatusCode.OK,
-        mapOf("success" to message)
+        mapOf(
+            "success" to true,
+            "message" to message
+        )
+    )
+}
+
+suspend fun RoutingContext.successResponse(result:Any){
+    call.respond(
+        HttpStatusCode.OK,
+        mapOf("result" to result)
     )
 }

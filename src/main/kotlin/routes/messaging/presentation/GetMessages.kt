@@ -1,11 +1,12 @@
-package com.example.messaging.presentation
+package com.example.routes.messaging.presentation
 
-import com.example.messaging.model.MessagesRepository
+import com.example.routes.messaging.model.MessagesRepository
 import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Routing.getMessages(messagesRepository: MessagesRepository){
+
     // Endpoint to get messages by phone number
     get("/get/{phoneNumber}") {
 

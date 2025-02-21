@@ -1,6 +1,6 @@
 package com.example
 
-import com.example.database.configureDatabase
+import com.example.core.data.configureDatabase
 import com.example.di.DIModule
 import io.ktor.server.application.*
 
