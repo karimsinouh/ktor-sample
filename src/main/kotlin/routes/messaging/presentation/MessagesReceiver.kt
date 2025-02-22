@@ -5,6 +5,7 @@ import com.example.core.model.successResponse
 import com.example.routes.messaging.data.GenerateAIResponse
 import com.example.routes.messaging.model.ChatRepository
 import com.example.routes.messaging.model.MessageModel
+import com.example.routes.users.model.UsersRepository
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 
@@ -15,8 +16,8 @@ import io.ktor.server.routing.*
  * Sends a message back to routes.users via Whatsapp API.
  * */
 fun Routing.messagesReceiver(
-    repo: ChatRepository
-)=post("/messagesReceiver") {
+    repo: ChatRepository,
+)=post("/messages/messagesReceiver") {
 
     try {
 
@@ -28,9 +29,9 @@ fun Routing.messagesReceiver(
         //get the last 10 messages from this conversation from the database
         val messages=repo.messages.getLastMessages(message.phoneNumber)
 
+
         //generate AI response for the user message
         repo.generateAIResponse(
-            user=null,
             messages = messages,
             onSuccess = {aiResponse->
 
@@ -38,12 +39,14 @@ fun Routing.messagesReceiver(
                 repo.messages.insert(GenerateAIResponse.AIMessage.ROLE_ASSISTANT,message.phoneNumber,aiResponse)
 
                 //send the AI response back to the user via WhatsApp API
-                repo.sendWhatsappMessage(
-                    phoneNumber = message.phoneNumber,
-                    message=aiResponse,
-                    onSuccess = ::successResponse,
-                    onFailure = ::failureResponse
-                )
+//                repo.sendWhatsappMessage(
+//                    phoneNumber = message.phoneNumber,
+//                    message=aiResponse,
+//                    onSuccess = ::successResponse,
+//                    onFailure = ::failureResponse
+//                )
+
+                successResponse(aiResponse)
 
             },
             onFailure = ::failureResponse

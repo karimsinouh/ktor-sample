@@ -40,10 +40,21 @@ class UsersRepository(
 
         try {
             val user=usersDAO.getUserByPhoneNumber(phoneNumber)
-            onSuccess(user)
+            if (user==null){
+                onFailure("No such user")
+            }else{
+                onSuccess(user)
+            }
         }catch (e:Exception){
             onFailure(e.message?:"Failed tor retrieve user")
         }
+    }
+
+
+     fun getUserByPhoneNumber(
+        phoneNumber:String,
+    ):UserModel?{
+            return usersDAO.getUserByPhoneNumber(phoneNumber)
     }
 
     suspend fun getAllUsers(

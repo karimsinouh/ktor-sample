@@ -3,6 +3,7 @@ package com.example.routes.users.data
 import com.example.routes.users.model.UserModel
 import com.example.routes.users.model.UsersTable
 import com.example.routes.users.model.toUser
+import com.example.routes.users.model.toUserOrNull
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -33,12 +34,12 @@ class UsersDAO {
         }
     }
 
-    fun getUserByPhoneNumber(phoneNumber:String):UserModel{
+    fun getUserByPhoneNumber(phoneNumber:String):UserModel?{
         return transaction {
             UsersTable.selectAll()
                 .where(UsersTable.phoneNumber eq phoneNumber)
-                .single()
-                .toUser()
+                .singleOrNull()
+                ?.toUserOrNull()
         }
     }
 

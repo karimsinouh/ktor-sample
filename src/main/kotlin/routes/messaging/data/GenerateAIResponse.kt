@@ -4,29 +4,31 @@ import com.example.routes.messaging.data.GenerateAIResponse.AIMessage.Companion.
 import com.example.routes.users.model.UserModel
 import com.example.routes.messaging.model.MessageModel
 import com.example.routes.messaging.model.toAIMessages
+import com.example.routes.users.model.UsersRepository
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 
-class GenerateAIResponse(private val client:HttpClient) {
+class GenerateAIResponse(
+    private val client:HttpClient,
+    private val usersRepository: UsersRepository
+) {
 
     private val key="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"
     private val model="gpt-4o-mini"
 
     suspend operator fun invoke(
-        user: UserModel?=null,
         messages:List<MessageModel>,
         onSuccess:suspend (String)->Unit,
         onFailure:suspend (String)->Unit,
     ){
 
-        val recentMessages=messages.toAIMessages().toMutableList()
-        val trainingMessage=getTrainingMessage(user)
-        recentMessages.add(0,trainingMessage)
 
         try {
+
+            val recentMessages=getRecentMessages(messages)
 
             val response=client.post{
                 url("https://api.openai.com/v1/chat/completions")
@@ -59,7 +61,22 @@ class GenerateAIResponse(private val client:HttpClient) {
 
     }
 
-    private fun getTrainingMessage(user: UserModel?): AIMessage {
+    private fun getRecentMessages(
+        messages: List<MessageModel>
+    ):List<AIMessage>{
+
+        val phoneNumber=messages.last().phoneNumber
+        val user=usersRepository.getUserByPhoneNumber(phoneNumber)
+
+        val recentMessages=messages.toAIMessages().toMutableList()
+
+        val trainingMessage=getTrainingMessage(user)
+        recentMessages.add(0,trainingMessage)
+
+        return recentMessages
+    }
+
+    private fun getTrainingMessage(user:UserModel?): AIMessage {
         val trainingMessageBuilder=StringBuilder()
         trainingMessageBuilder.apply {
             append("You're an assistant integrated in Whatsapp. ")
@@ -67,6 +84,7 @@ class GenerateAIResponse(private val client:HttpClient) {
             if (user!=null)
                 append("Here's some information about the customer: $user ")
         }
+
         val trainingMessage= AIMessage(
             role = ROLE_DEVELOPER,
             content = trainingMessageBuilder.toString()
