@@ -20,8 +20,11 @@ class UsersRepository(
             usersDAO.insertUser(user)
             onSuccess()
 
-        }catch (e:Exception){
-            onFailure(e.message?:"Couldn't insert user")
+        }catch (e:IllegalStateException){
+            onSuccess()
+        }
+        catch (e:Exception){
+            onFailure("From model: ${e.message}"?:"Couldn't insert user")
         }
     }
 
@@ -80,6 +83,9 @@ class UsersRepository(
 
             if(user==null){
                 onFailure("Null user")
+                return
+            }else if (user.id==null){
+                onFailure("Null user id")
                 return
             }
 

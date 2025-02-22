@@ -15,7 +15,7 @@ class UsersDAO {
                 it[name]=user.name
                 it[phoneNumber]=user.phoneNumber
                 it[email]=user.email?:""
-                it[feedback_collected]=user.feedbackCollected?:false
+                it[feedbackCollected]=user.feedbackCollected?:false
                 it[note]=user.note?:""
             }[UsersTable.id]
         }
@@ -23,11 +23,11 @@ class UsersDAO {
 
     fun update(user: UserModel){
         return transaction {
-            UsersTable.update {
+            UsersTable.update({ UsersTable.id eq (user.id?:0) }) {
                 it[name]=user.name
                 it[phoneNumber]=user.phoneNumber
                 it[email]=user.email?:""
-                it[feedback_collected]=user.feedbackCollected?:false
+                it[feedbackCollected]=user.feedbackCollected?:false
                 it[note]=user.note?:""
             }
         }

@@ -9,6 +9,6 @@ fun ResultRow.toUser():UserModel{
         phoneNumber = this[UsersTable.phoneNumber],
         email = this[UsersTable.email],
         note = this[UsersTable.note],
-        feedbackCollected = this[UsersTable.feedback_collected]
+        feedbackCollected = this[UsersTable.feedbackCollected]
     )
 }

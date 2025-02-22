@@ -1,12 +1,11 @@
 package com.example.routes.messaging.presentation
 
-import com.example.core.errorResponse
-import com.example.core.successResponse
+import com.example.core.model.failureResponse
+import com.example.core.model.successResponse
 import com.example.routes.messaging.data.GenerateAIResponse
 import com.example.routes.messaging.model.ChatRepository
 import com.example.routes.messaging.model.MessageModel
 import io.ktor.server.request.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 /**
@@ -43,15 +42,15 @@ fun Routing.messagesReceiver(
                     phoneNumber = message.phoneNumber,
                     message=aiResponse,
                     onSuccess = ::successResponse,
-                    onFailure = ::errorResponse
+                    onFailure = ::failureResponse
                 )
 
             },
-            onFailure = ::errorResponse
+            onFailure = ::failureResponse
         )
 
     } catch (e: Exception) {
-        errorResponse("Failed to insert message: ${e.message}")
+        failureResponse("Failed to insert message: ${e.message}")
     }
 
 }
