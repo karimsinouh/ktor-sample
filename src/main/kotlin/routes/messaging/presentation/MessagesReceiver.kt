@@ -69,7 +69,7 @@ fun Routing.verifyToken()=get("/messages/messagesReceiver") {
 
     val verificationToken="karimsinouh"
     val challenge=call.request.queryParameters["hub.challenge"]
-    val receivedVerificationToken=call.request.queryParameters["verify_token"]
+    val receivedVerificationToken=call.request.queryParameters["hub.verify_token"]
 
     if (receivedVerificationToken==verificationToken){
         call.respondText(challenge?:"",ContentType.Text.Plain)
