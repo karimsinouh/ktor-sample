@@ -5,8 +5,11 @@ import com.example.core.model.successResponse
 import com.example.routes.messaging.data.GenerateAIResponse
 import com.example.routes.messaging.model.ChatRepository
 import com.example.routes.messaging.model.MessageModel
+import com.example.routes.messaging.model.WhatsAppMessage
 import com.example.routes.users.model.UsersRepository
+import io.ktor.http.*
 import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 /**
@@ -23,11 +26,15 @@ fun Routing.messagesReceiver(
 
 
         //receive the user message and store it in the database
-        val message = call.receive<MessageModel>()
-        repo.messages.insert("user", message.phoneNumber, message.message)
+        val message = call.receive<WhatsAppMessage>()
+        println(message.toString())
+        val text = message.entry.first().changes.first().value.messages.first().text.body
+        val sender = message.entry.first().changes.first().value.messages.first().from
+
+        repo.messages.insert("user",sender, text)
 
         //get the last 10 messages from this conversation from the database
-        val messages=repo.messages.getLastMessages(message.phoneNumber)
+        val messages=repo.messages.getLastMessages(sender)
 
 
         //generate AI response for the user message
@@ -36,17 +43,16 @@ fun Routing.messagesReceiver(
             onSuccess = {aiResponse->
 
                 //store the AI response in the database
-                repo.messages.insert(GenerateAIResponse.AIMessage.ROLE_ASSISTANT,message.phoneNumber,aiResponse)
+                repo.messages.insert(GenerateAIResponse.AIMessage.ROLE_ASSISTANT,sender,aiResponse)
 
                 //send the AI response back to the user via WhatsApp API
-//                repo.sendWhatsappMessage(
-//                    phoneNumber = message.phoneNumber,
-//                    message=aiResponse,
-//                    onSuccess = ::successResponse,
-//                    onFailure = ::failureResponse
-//                )
+                repo.sendWhatsappMessage(
+                    phoneNumber = sender,
+                    message=aiResponse,
+                    onSuccess = ::successResponse,
+                    onFailure = ::failureResponse
+                )
 
-                successResponse(aiResponse)
 
             },
             onFailure = ::failureResponse
@@ -54,6 +60,21 @@ fun Routing.messagesReceiver(
 
     } catch (e: Exception) {
         failureResponse("Failed to insert message: ${e.message}")
+    }
+
+}
+
+
+fun Routing.verifyToken()=get("/messages/messagesReceiver") {
+
+    val verificationToken="karimsinouh"
+    val challenge=call.request.queryParameters["hub.challenge"]
+    val receivedVerificationToken=call.request.queryParameters["verify_token"]
+
+    if (receivedVerificationToken==verificationToken){
+        call.respondText(challenge?:"",ContentType.Text.Plain)
+    }else{
+        call.respond(HttpStatusCode.Forbidden,"Verification Failed")
     }
 
 }

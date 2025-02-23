@@ -2,7 +2,7 @@ package com.example.di
 
 import com.example.routes.messaging.data.GenerateAIResponse
 import com.example.routes.messaging.data.MessagesDAO
-import com.example.messaging.data.SendWhatsappMessage
+import com.example.routes.messaging.data.SendWhatsappMessage
 import com.example.routes.messaging.model.ChatRepository
 import com.example.routes.messaging.model.MessagesRepository
 import com.example.routes.users.data.UsersDAO

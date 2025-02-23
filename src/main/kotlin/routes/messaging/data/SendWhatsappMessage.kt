@@ -1,6 +1,5 @@
-package com.example.messaging.data
+package com.example.routes.messaging.data
 
-import com.example.routes.messaging.data.GenerateAIResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -12,7 +11,7 @@ class SendWhatsappMessage(
 ) {
 
     private val phoneNumberId="618261414699683"
-    private val accessToken="EAAN3xaZBPt7ABO7ItAtWZAixCL9gp3AM63kmEyHFLsABVykojVMLCUO3xa4jMHr8TYaou37bAVs6j7oWZASTDepqieXa6dClO3vuwp8ZCBLQOCZAarnpGla3eCK9jZBLXdZBs8LowLQr5snBIUsSaCMYsMaP4KZAmB4pJvSt8YePB5MdbMKc2xldXtuYfqF4Nr0a0hpq5zZAroSO8qsLhP69T5etnUR78"
+    private val accessToken="EAAN3xaZBPt7ABOwd55Hy8hNzlO1MnYGrRZBHrqcRkdC7bvjvEN19OTJ1PZB5JvU7aBgWZAFU6CtZBugbEh2w12K4nJjZB0xM5oXkdPUU4DNwqrRelinnw6HmKGZCkOlHdJUrJrA7edGZBZAgmKLVqJrX7O5tMdrz48vLemDVJsZBX58sb2kWZC1YzozyAd0733Gbks1TpZC6NJdGoMM0jdq49q5k0w2tZA6JXmlfuDym5oTu2"
 
     suspend operator fun invoke(
         phoneNumber:String,
@@ -29,7 +28,7 @@ class SendWhatsappMessage(
                     append(HttpHeaders.ContentType,"application/json")
                     append(HttpHeaders.Authorization,"Bearer $accessToken")
                 }
-                val requestBody=WhatsAppMessageRequest(
+                val requestBody= WhatsAppMessageRequest(
                     messaging_product = "whatsapp",
                     to = phoneNumber,
                     type = "text",
