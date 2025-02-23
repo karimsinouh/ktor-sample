@@ -13,6 +13,9 @@ fun Routing.getMessages(messagesRepository: MessagesRepository){
     get("messages/get/{phoneNumber}") {
 
         val phoneNumber = call.parameters["phoneNumber"]
+
+        println("Got msgs for $phoneNumber")
+
         if (phoneNumber.isNullOrBlank()) {
             failureResponse("Phone number is required")
             return@get

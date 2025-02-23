@@ -27,6 +27,7 @@ fun Routing.messagesReceiver(
 
         //receive the user message and store it in the database
         val message = call.receive<WhatsAppMessage>()
+        println("Received a message")
         println(message.toString())
         val text = message.entry.first().changes.first().value.messages.first().text.body
         val sender = message.entry.first().changes.first().value.messages.first().from
@@ -41,6 +42,9 @@ fun Routing.messagesReceiver(
         repo.generateAIResponse(
             messages = messages,
             onSuccess = {aiResponse->
+
+                println("AI responded a message")
+                println(aiResponse)
 
                 //store the AI response in the database
                 repo.messages.insert(GenerateAIResponse.AIMessage.ROLE_ASSISTANT,sender,aiResponse)
@@ -73,8 +77,10 @@ fun Routing.verifyToken()=get("/messages/messagesReceiver") {
 
     if (receivedVerificationToken==verificationToken){
         call.respondText(challenge?:"",ContentType.Text.Plain)
+        println("Success. token verification: $receivedVerificationToken, challenge: $challenge")
     }else{
         call.respond(HttpStatusCode.Forbidden,"Verification Failed")
+        println("Failure. token verification: $receivedVerificationToken, challenge: $challenge")
     }
 
 }
