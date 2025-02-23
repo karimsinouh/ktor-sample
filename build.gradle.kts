@@ -36,7 +36,7 @@ dependencies {
 
 
     //database
-    implementation("org.postgresql:postgresql:42.6.0") // PostgreSQL driver
+    implementation("org.postgresql:postgresql:42.7.2") // PostgreSQL driver
     implementation("org.jetbrains.exposed:exposed-core:0.59.0") // Exposed ORM
     implementation("org.jetbrains.exposed:exposed-dao:0.59.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.59.0")
