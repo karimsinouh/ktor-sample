@@ -1,5 +1,7 @@
 package com.example.routes.messaging.data
 
+import com.example.core.Constants.AI_API_KEY
+import com.example.core.Constants.AI_MODEL
 import com.example.routes.messaging.data.GenerateAIResponse.AIMessage.Companion.ROLE_DEVELOPER
 import com.example.routes.users.model.UserModel
 import com.example.routes.messaging.model.MessageModel
@@ -16,8 +18,6 @@ class GenerateAIResponse(
     private val usersRepository: UsersRepository
 ) {
 
-    private val key="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"
-    private val model="gpt-4o-mini"
 
     suspend operator fun invoke(
         messages:List<MessageModel>,
@@ -34,9 +34,9 @@ class GenerateAIResponse(
                 url("https://api.openai.com/v1/chat/completions")
                 headers {
                     append(HttpHeaders.ContentType,"application/json")
-                    append(HttpHeaders.Authorization,"Bearer $key")
+                    append(HttpHeaders.Authorization,"Bearer $AI_API_KEY")
                 }
-                val body= RequestBody(model=model,messages=recentMessages)
+                val body= RequestBody(model= AI_MODEL,messages=recentMessages)
                 setBody(body)
             }
 

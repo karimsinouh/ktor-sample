@@ -2,9 +2,12 @@ package com.example.routes.messaging.model
 
 import kotlinx.serialization.Serializable
 
+/**
+ * This is received from Meta via webhook
+ * */
 
 @Serializable
-data class WhatsAppBusinessAccount(
+data class WhatsAppMessageResponse(
     val `object`: String,
     val entry: List<Entry>
 )
@@ -51,11 +54,6 @@ data class Message(
     val timestamp: String,
     val text: Text,
     val type: String
-)
-
-@Serializable
-data class Text(
-    val body: String
 )
 
 

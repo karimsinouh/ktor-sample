@@ -5,6 +5,8 @@ import com.example.routes.messaging.data.MessagesDAO
 import com.example.routes.messaging.data.SendWhatsappMessage
 import com.example.routes.messaging.model.ChatRepository
 import com.example.routes.messaging.model.MessagesRepository
+import com.example.routes.templates.data.SendTemplateMessage
+import com.example.routes.templates.model.TemplatesRepository
 import com.example.routes.users.data.UsersDAO
 import com.example.routes.users.model.UsersRepository
 import io.ktor.client.*
@@ -50,6 +52,14 @@ class DIModule {
 
     val usersRepository by lazy {
         UsersRepository(usersDao)
+    }
+
+    val sendTemplateMessage by lazy {
+        SendTemplateMessage(client)
+    }
+
+    val templatesRepository by lazy {
+        TemplatesRepository(sendTemplateMessage)
     }
 
 }

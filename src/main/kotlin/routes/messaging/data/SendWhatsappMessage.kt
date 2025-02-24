@@ -1,5 +1,9 @@
 package com.example.routes.messaging.data
 
+import com.example.core.Constants
+import com.example.routes.messaging.model.Text
+import com.example.routes.messaging.model.WhatsAppMessageRequest
+import com.example.routes.messaging.model.WhatsappResponseBody
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -10,9 +14,6 @@ class SendWhatsappMessage(
     private val client:HttpClient
 ) {
 
-    private val phoneNumberId="595557563638834"
-    private val accessToken="EAAN3xaZBPt7ABOwd55Hy8hNzlO1MnYGrRZBHrqcRkdC7bvjvEN19OTJ1PZB5JvU7aBgWZAFU6CtZBugbEh2w12K4nJjZB0xM5oXkdPUU4DNwqrRelinnw6HmKGZCkOlHdJUrJrA7edGZBZAgmKLVqJrX7O5tMdrz48vLemDVJsZBX58sb2kWZC1YzozyAd0733Gbks1TpZC6NJdGoMM0jdq49q5k0w2tZA6JXmlfuDym5oTu2"
-
     suspend operator fun invoke(
         phoneNumber:String,
         message:String,
@@ -20,13 +21,13 @@ class SendWhatsappMessage(
         onFailure:suspend (String)->Unit
     ){
 
-        val url="https://graph.facebook.com/v22.0/$phoneNumberId/messages"
+        val url="https://graph.facebook.com/v22.0/${Constants.WHATSAPP_PHONE_NUMBER_ID}/messages"
         try {
 
             val response=client.post(url) {
                 headers {
                     append(HttpHeaders.ContentType,"application/json")
-                    append(HttpHeaders.Authorization,"Bearer $accessToken")
+                    append(HttpHeaders.Authorization,"Bearer ${Constants.WHATSAPP_ACCESS_TOKEN}")
                 }
                 val requestBody= WhatsAppMessageRequest(
                     messaging_product = "whatsapp",
@@ -57,21 +58,5 @@ class SendWhatsappMessage(
     }
 
 
-    @kotlinx.serialization.Serializable
-    data class WhatsAppMessageRequest(
-        val messaging_product: String,
-        val to: String,
-        val type: String,
-        val text: Text
-    )
 
-    @Serializable
-    data class Text(
-        val body: String
-    )
-
-    @Serializable
-    data class WhatsappResponseBody(
-        val error: GenerateAIResponse.APIError?=null,
-    )
 }

@@ -1,12 +1,12 @@
 package com.example.routes.messaging.presentation
 
+import com.example.core.Constants
 import com.example.core.model.failureResponse
 import com.example.core.model.getCorrectPhoneNumberFormat
 import com.example.core.model.successResponse
 import com.example.routes.messaging.data.GenerateAIResponse
 import com.example.routes.messaging.model.ChatRepository
-import com.example.routes.messaging.model.WhatsAppBusinessAccount
-import com.example.routes.users.model.UsersRepository
+import com.example.routes.messaging.model.WhatsAppMessageResponse
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -26,7 +26,7 @@ fun Routing.messagesReceiver(
 
 
         //receive the user message and store it in the database
-        val requestBody = call.receive<WhatsAppBusinessAccount>()
+        val requestBody = call.receive<WhatsAppMessageResponse>()
         val message= extractMessageAndSender(requestBody)
 
         println("Received a message")
@@ -72,7 +72,7 @@ fun Routing.messagesReceiver(
 
 }
 
-fun extractMessageAndSender(response: WhatsAppBusinessAccount): Pair<String, String> {
+fun extractMessageAndSender(response: WhatsAppMessageResponse): Pair<String, String> {
     // Traverse the nested structure
     for (entry in response.entry) {
         for (change in entry.changes) {
@@ -89,11 +89,10 @@ fun extractMessageAndSender(response: WhatsAppBusinessAccount): Pair<String, Str
 }
 fun Routing.verifyToken()=get("/messages/messagesReceiver") {
 
-    val verificationToken="karimsinouh"
     val challenge=call.request.queryParameters["hub.challenge"]
     val receivedVerificationToken=call.request.queryParameters["hub.verify_token"]
 
-    if (receivedVerificationToken==verificationToken){
+    if (receivedVerificationToken==Constants.WHATSAPP_VERIFICATION_TOKEN){
         call.respondText(challenge?:"",ContentType.Text.Plain)
         println("Success. token verification: $receivedVerificationToken, challenge: $challenge")
     }else{
