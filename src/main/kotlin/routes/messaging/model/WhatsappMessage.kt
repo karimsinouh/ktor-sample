@@ -3,21 +3,9 @@ package com.example.routes.messaging.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class WhatsAppMessage(
-    val `object`: String,
-    val entry: List<Entry>
-)
-
-@kotlinx.serialization.Serializable
-data class Entry(
-    val id: String,
-    val changes: List<Change>
-)
-
-@kotlinx.serialization.Serializable
-data class Change(
-    val value: Value,
-    val field: String
+data class WhatsappMessage(
+    val field: String,
+    val value: Value
 )
 
 @Serializable
@@ -50,6 +38,7 @@ data class Message(
     val from: String,
     val id: String,
     val timestamp: String,
+    val type: String,
     val text: Text
 )
 

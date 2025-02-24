@@ -1,11 +1,11 @@
 package com.example.routes.messaging.presentation
 
 import com.example.core.model.failureResponse
+import com.example.core.model.getCorrectPhoneNumberFormat
 import com.example.core.model.successResponse
 import com.example.routes.messaging.data.GenerateAIResponse
 import com.example.routes.messaging.model.ChatRepository
-import com.example.routes.messaging.model.MessageModel
-import com.example.routes.messaging.model.WhatsAppMessage
+import com.example.routes.messaging.model.WhatsappMessage
 import com.example.routes.users.model.UsersRepository
 import io.ktor.http.*
 import io.ktor.server.request.*
@@ -26,11 +26,11 @@ fun Routing.messagesReceiver(
 
 
         //receive the user message and store it in the database
-        val message = call.receive<WhatsAppMessage>()
+        val message = call.receive<WhatsappMessage>()
         println("Received a message")
         println(message.toString())
-        val text = message.entry.first().changes.first().value.messages.first().text.body
-        val sender = message.entry.first().changes.first().value.messages.first().from
+        val text = message.value.messages.last().text.body
+        val sender = getCorrectPhoneNumberFormat(message.value.messages.last().from)
 
         repo.messages.insert("user",sender, text)
 
@@ -63,7 +63,8 @@ fun Routing.messagesReceiver(
         )
 
     } catch (e: Exception) {
-        failureResponse("Failed to insert message: ${e.message}")
+        println(e.message?:"Message receiving failed")
+        failureResponse(e.message?:"Message receiving failed")
     }
 
 }
