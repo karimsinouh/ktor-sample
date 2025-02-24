@@ -5,7 +5,7 @@ import com.example.core.model.getCorrectPhoneNumberFormat
 import com.example.core.model.successResponse
 import com.example.routes.messaging.data.GenerateAIResponse
 import com.example.routes.messaging.model.ChatRepository
-import com.example.routes.messaging.model.WhatsappMessage
+import com.example.routes.messaging.model.WhatsAppBusinessAccount
 import com.example.routes.users.model.UsersRepository
 import io.ktor.http.*
 import io.ktor.server.request.*
@@ -26,11 +26,14 @@ fun Routing.messagesReceiver(
 
 
         //receive the user message and store it in the database
-        val message = call.receive<WhatsappMessage>()
+        val requestBody = call.receive<WhatsAppBusinessAccount>()
+        val message= extractMessageAndSender(requestBody)
+
         println("Received a message")
-        println(message.toString())
-        val text = message.value.messages.last().text.body
-        val sender = getCorrectPhoneNumberFormat(message.value.messages.last().from)
+        println(requestBody.toString())
+
+        val sender = getCorrectPhoneNumberFormat(message.first)
+        val text = message.second
 
         repo.messages.insert("user",sender, text)
 
@@ -69,7 +72,21 @@ fun Routing.messagesReceiver(
 
 }
 
-
+fun extractMessageAndSender(response: WhatsAppBusinessAccount): Pair<String, String> {
+    // Traverse the nested structure
+    for (entry in response.entry) {
+        for (change in entry.changes) {
+            if (change.field == "messages") {
+                for (message in change.value.messages) {
+                    val sender = message.from
+                    val messageBody = message.text.body
+                    return Pair(sender, messageBody)
+                }
+            }
+        }
+    }
+    throw IllegalStateException("No message or sender found")
+}
 fun Routing.verifyToken()=get("/messages/messagesReceiver") {
 
     val verificationToken="karimsinouh"
