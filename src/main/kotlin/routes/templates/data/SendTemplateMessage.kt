@@ -18,7 +18,7 @@ class SendTemplateMessage(
 
     suspend operator fun invoke(
         template: WhatsappTemplateMessageRequest,
-        onSuccess:suspend ()->Unit,
+        onSuccess:suspend (String)->Unit,
         onFailure:suspend (String)->Unit
     ){
         try {
@@ -32,10 +32,10 @@ class SendTemplateMessage(
             }
 
             if (response.status.value==200)
-                onSuccess()
+                onSuccess(response.bodyAsText())
             else{
                 val error=response.body<WhatsappResponseBody>()
-                onFailure(error.error?.message?:"Failed to send template")
+                onFailure(error.error?.getErrorMessage()?:"API Failure")
             }
 
 

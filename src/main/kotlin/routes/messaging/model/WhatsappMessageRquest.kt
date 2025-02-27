@@ -28,4 +28,18 @@ data class WhatsappResponseBody(
 @Serializable
 data class WhatsappErrorMessage(
     val message:String,
-    )
+    val error_data:List<ErrorData>?=null
+    ){
+    fun getErrorMessage():String{
+        val errorData=StringBuilder()
+        error_data?.forEach {
+            errorData.append(it.details+" \n")
+        }
+        return "$message \n$errorData"
+    }
+}
+
+@Serializable
+data class ErrorData(
+    val details:String?=null,
+)

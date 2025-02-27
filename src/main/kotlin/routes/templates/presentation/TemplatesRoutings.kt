@@ -19,7 +19,7 @@ fun Routing.templatesRouting(
             val body=call.receive<WhatsappTemplateMessageRequest>()
             templatesRepository(
                 template = body,
-                onSuccess = { successResponse("Message Sent") },
+                onSuccess = { successResponse(it) },
                 onFailure = ::failureResponse
             )
         }catch (e:Exception){

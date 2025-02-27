@@ -32,5 +32,6 @@ data class WhatsappTemplateComponents(
 @Serializable
 data class TemplateComponentParameter(
     val type: String,
+    val parameter_name:String,
     val text:String,
 )

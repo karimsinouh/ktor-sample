@@ -9,7 +9,7 @@ class TemplatesRepository(
 
     suspend operator fun invoke(
         template: WhatsappTemplateMessageRequest,
-        onSuccess:suspend ()->Unit,
+        onSuccess:suspend (String)->Unit,
         onFailure:suspend (String)->Unit
     ){
         sendTemplatesRepository(template,onSuccess,onFailure)
