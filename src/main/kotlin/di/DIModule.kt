@@ -1,5 +1,7 @@
 package com.example.di
 
+import com.example.routes.appointments.data.AppointmentsDAO
+import com.example.routes.appointments.model.AppointmentsRepository
 import com.example.routes.messaging.data.GenerateAIResponse
 import com.example.routes.messaging.data.MessagesDAO
 import com.example.routes.messaging.data.SendWhatsappMessage
@@ -34,6 +36,11 @@ class DIModule {
     private val usersDao by lazy {
         UsersDAO()
     }
+
+    private val appointmentsDao by lazy {
+        AppointmentsDAO()
+    }
+
     val generateAIResponse by lazy {
         GenerateAIResponse(client,usersRepository)
     }
@@ -60,6 +67,10 @@ class DIModule {
 
     val templatesRepository by lazy {
         TemplatesRepository(sendTemplateMessage)
+    }
+
+    val appointmentsRepository by lazy {
+        AppointmentsRepository(appointmentsDao)
     }
 
 }
