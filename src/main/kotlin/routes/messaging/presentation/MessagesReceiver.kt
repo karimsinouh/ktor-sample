@@ -4,7 +4,7 @@ import com.example.core.Constants
 import com.example.core.model.failureResponse
 import com.example.core.model.getCorrectPhoneNumberFormat
 import com.example.core.model.successResponse
-import com.example.routes.messaging.data.GenerateAIResponse
+import com.example.routes.messaging.model.AIMessage
 import com.example.routes.messaging.model.ChatRepository
 import com.example.routes.messaging.model.WhatsAppMessageResponse
 import io.ktor.http.*
@@ -32,17 +32,18 @@ fun Routing.messagesReceiver(
         println("Received a message")
         println(requestBody.toString())
 
-        val sender = getCorrectPhoneNumberFormat(message.first)
+        val clientPhoneNumber = getCorrectPhoneNumberFormat(message.first)
         val text = message.second
 
-        repo.messages.insert("user",sender, text)
+        repo.messages.insert("user",clientPhoneNumber, text)
 
         //get the last 10 messages from this conversation from the database
-        val messages=repo.messages.getLastMessages(sender)
+        val messages=repo.messages.getLastMessages(clientPhoneNumber)
 
 
         //generate AI response for the user message
         repo.generateAIResponse(
+            clientPhoneNumber = clientPhoneNumber,
             messages = messages,
             onSuccess = {aiResponse->
 
@@ -50,11 +51,11 @@ fun Routing.messagesReceiver(
                 println(aiResponse)
 
                 //store the AI response in the database
-                repo.messages.insert(GenerateAIResponse.AIMessage.ROLE_ASSISTANT,sender,aiResponse)
+                repo.messages.insert(AIMessage.ROLE_ASSISTANT,clientPhoneNumber,aiResponse)
 
                 //send the AI response back to the user via WhatsApp API
                 repo.sendWhatsappMessage(
-                    phoneNumber = sender,
+                    phoneNumber = clientPhoneNumber,
                     message=aiResponse,
                     onSuccess = ::successResponse,
                     onFailure = ::failureResponse
@@ -87,6 +88,7 @@ fun extractMessageAndSender(response: WhatsAppMessageResponse): Pair<String, Str
     }
     throw IllegalStateException("No message or sender found")
 }
+
 fun Routing.verifyToken()=get("/messages/messagesReceiver") {
 
     val challenge=call.request.queryParameters["hub.challenge"]

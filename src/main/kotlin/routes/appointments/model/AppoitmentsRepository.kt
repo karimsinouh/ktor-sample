@@ -6,7 +6,9 @@ import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.postgresql.util.PSQLException
 
 
-class AppointmentsRepository(private val dao:AppointmentsDAO) {
+class AppointmentsRepository(
+    private val dao:AppointmentsDAO,
+) {
 
     suspend fun getAll(
         onSuccess: suspend (List<AppointmentModel>)->Unit,
@@ -32,6 +34,7 @@ class AppointmentsRepository(private val dao:AppointmentsDAO) {
             onFailure(e.message?:"failed to retrieve appointments from database")
         }
     }
+
 
     suspend fun getByPhoneNumber(
         phoneNumber:String,

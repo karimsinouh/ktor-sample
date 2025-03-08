@@ -2,10 +2,11 @@ package com.example.routes.messaging.data
 
 import com.example.core.Constants.AI_API_KEY
 import com.example.core.Constants.AI_MODEL
-import com.example.routes.messaging.data.GenerateAIResponse.AIMessage.Companion.ROLE_DEVELOPER
+import com.example.routes.appointments.model.AppointmentModel
+import com.example.routes.appointments.model.AppointmentsRepository
+import com.example.routes.messaging.model.*
+import com.example.routes.messaging.model.AIMessage.Companion.ROLE_DEVELOPER
 import com.example.routes.users.model.UserModel
-import com.example.routes.messaging.model.MessageModel
-import com.example.routes.messaging.model.toAIMessages
 import com.example.routes.users.model.UsersRepository
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -15,11 +16,13 @@ import kotlinx.serialization.Serializable
 
 class GenerateAIResponse(
     private val client:HttpClient,
-    private val usersRepository: UsersRepository
+    private val usersRepository: UsersRepository,
+    private val appointmentsRepository: AppointmentsRepository,
 ) {
 
 
     suspend operator fun invoke(
+        clientPhoneNumber:String,
         messages:List<MessageModel>,
         onSuccess:suspend (String)->Unit,
         onFailure:suspend (String)->Unit,
@@ -28,28 +31,68 @@ class GenerateAIResponse(
 
         try {
 
-            val recentMessages=getRecentMessages(messages)
+            val user=usersRepository.getUserByPhoneNumber(clientPhoneNumber)
+            val recentMessages=getRecentMessages(user,messages)
 
+            //API Request
             val response=client.post{
                 url("https://api.openai.com/v1/chat/completions")
                 headers {
                     append(HttpHeaders.ContentType,"application/json")
                     append(HttpHeaders.Authorization,"Bearer $AI_API_KEY")
                 }
-                val body= RequestBody(model= AI_MODEL,messages=recentMessages)
+                val body= RequestBody(
+                    model = AI_MODEL,
+                    messages = recentMessages,
+                    response_format = responseFormat
+                )
                 setBody(body)
             }
 
+
+            //API Response
             if (response.status.value==200){
-                val responseBody: ResponseBody =response.body()
-                val choices=responseBody.choices
-                if (choices.isEmpty())
-                    onFailure("Empty choices")
-                else
-                    onSuccess(choices[0].message.content)
+
+                val responseBody: StructuredResponseBody =response.body()
+
+
+                //Act according to the action
+                when(responseBody.action){
+                    "normal_chat_message"->{
+                        onSuccess(responseBody.user_message)
+                    }
+                    "retrieve_appointments"->{
+                        appointmentsRepository.getByPhoneNumber(
+                            phoneNumber = clientPhoneNumber,
+                            onSuccess = {
+                                onSuccess(AppointmentModel.listToText(it))
+                            },
+                            onFailure=onSuccess
+                        )
+                    }
+                    "schedule_appointment"->{
+                        appointmentsRepository.insert(
+                            appointmentModel = AppointmentModel(
+                                0,
+                                clientPhoneNumber,
+                                user?.name?:"Username unspecified",
+                                responseBody.parameters?.date?:"",
+                                responseBody.parameters?.time?:"",
+                                status="pending_approval"
+                            ),
+                            onSuccess={
+                                onSuccess(responseBody.user_message)
+                            },
+                            onFailure=onSuccess
+                        )
+                    }
+                    else->{
+                        onSuccess(responseBody.user_message)
+                    }
+                }
 
             }else{
-                onFailure(response.toString())
+                onFailure(response.status.description)
             }
 
 
@@ -62,11 +105,9 @@ class GenerateAIResponse(
     }
 
     private fun getRecentMessages(
+        user:UserModel?,
         messages: List<MessageModel>
     ):List<AIMessage>{
-
-        val phoneNumber=messages.last().phoneNumber
-        val user=usersRepository.getUserByPhoneNumber(phoneNumber)
 
         val recentMessages=messages.toAIMessages().toMutableList()
 
@@ -79,10 +120,10 @@ class GenerateAIResponse(
     private fun getTrainingMessage(user:UserModel?): AIMessage {
         val trainingMessageBuilder=StringBuilder()
         trainingMessageBuilder.apply {
-            append("You're an assistant integrated in Whatsapp. ")
-            append("You work for a dentist to remind customers about their appointments and collect their feedbacks on the service.")
+            append("You're an assistant working for a dentist. ")
+            append("you can remind customers about their appointments schedule new ones.")
             if (user!=null)
-                append("Here's some information about the customer: $user ")
+                append("some info about the customer: $user ")
         }
 
         val trainingMessage= AIMessage(
@@ -92,37 +133,6 @@ class GenerateAIResponse(
         return trainingMessage
     }
 
-    @Serializable
-    data class AIMessage(
-        val role:String,
-        val content:String
-    ){
-        companion object{
-            const val ROLE_USER="user"
-            const val ROLE_ASSISTANT="assistant"
-            const val ROLE_DEVELOPER="developer"
-        }
-    }
 
-    @Serializable
-    data class RequestBody(
-        val model:String,
-        val messages:List<AIMessage>,
-    )
-
-    @Serializable
-    data class ResponseBody(
-        val error: APIError?=null,
-        val choices:List<APIChoice>
-    )
-
-    @Serializable
-    data class APIChoice(
-        val message: AIMessage,
-    )
-    @Serializable
-    data class APIError(
-        val message:String,
-    )
 
 }
