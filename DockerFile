@@ -1,15 +1,10 @@
-# Stage 1: Build the application
+# Use a multi-stage build
 FROM gradle:8.3-jdk17 AS builder
 WORKDIR /app
 COPY . .
-USER root
-RUN apt-get update && apt-get install -y dos2unix
-RUN dos2unix gradlew
-RUN chmod +x gradlew
-USER gradle
-RUN ./gradlew shadowJar --no-daemon
+RUN gradle shadowJar --no-daemon --stacktrace
 
-# Stage 2: Create the runtime image
+# Use a lightweight JDK image
 FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar app.jar
