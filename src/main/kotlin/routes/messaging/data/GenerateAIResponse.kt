@@ -55,7 +55,7 @@ class GenerateAIResponse(
 
                 val responseBody: StructuredResponseBody =response.body()
 
-                print(responseBody.toString())
+                println(responseBody.toString())
 
                 //Act according to the action
                 when(responseBody.action){
