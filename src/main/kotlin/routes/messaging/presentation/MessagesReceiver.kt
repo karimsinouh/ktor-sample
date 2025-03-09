@@ -29,8 +29,6 @@ fun Routing.messagesReceiver(
         val requestBody = call.receive<WhatsAppMessageResponse>()
         val message= extractMessageAndSender(requestBody)
 
-        println("Received a message")
-        println(requestBody.toString())
 
         val clientPhoneNumber = getCorrectPhoneNumberFormat(message.first)
         val text = message.second
@@ -63,7 +61,10 @@ fun Routing.messagesReceiver(
 
 
             },
-            onFailure = ::failureResponse
+            onFailure = {
+                failureResponse(it)
+                println("/MessagesReceiver $it")
+            }
         )
 
     } catch (e: Exception) {
