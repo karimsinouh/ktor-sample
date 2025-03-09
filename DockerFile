@@ -1,8 +1,7 @@
-# Use a multi-stage build
-FROM gradle:8.3-jdk17 AS builder
-WORKDIR /app
-COPY . .
-RUN gradle shadowJar --no-daemon --stacktrace
+FROM gradle:7-jdk11 AS build
+COPY --chown=gradle:gradle . /home/gradle/src
+WORKDIR /home/gradle/src
+RUN gradle buildFatJar --no-daemon
 
 # Use a lightweight JDK image
 FROM eclipse-temurin:17-jdk-alpine
