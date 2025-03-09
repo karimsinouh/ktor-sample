@@ -11,8 +11,11 @@ import com.example.routes.users.model.UsersRepository
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class GenerateAIResponse(
     private val client:HttpClient,
@@ -49,18 +52,19 @@ class GenerateAIResponse(
                 setBody(body)
             }
 
+            val responseBody: ResponseBody =response.body()
 
+            println(responseBody)
             //API Response
-            if (response.status.value==200){
+            if (response.status.value==200 && responseBody.choices!=null){
 
-                val responseBody: StructuredResponseBody =response.body()
-
-                println(responseBody.toString())
+                val structuredResponse=Json.decodeFromString<StructuredResponseBody>(responseBody.choices[0].message.content)
+                println(structuredResponse)
 
                 //Act according to the action
-                when(responseBody.action){
+                when(structuredResponse.action){
                     "normal_chat_message"->{
-                        onSuccess(responseBody.user_message)
+                        onSuccess(structuredResponse.user_message?:"")
                     }
                     "retrieve_appointments"->{
                         appointmentsRepository.getByPhoneNumber(
@@ -68,7 +72,7 @@ class GenerateAIResponse(
                             onSuccess = {
                                 onSuccess(AppointmentModel.listToText(it))
                             },
-                            onFailure=onSuccess
+                            onFailure=onFailure
                         )
                     }
                     "schedule_appointment"->{
@@ -77,23 +81,23 @@ class GenerateAIResponse(
                                 0,
                                 clientPhoneNumber,
                                 user?.name?:"Username unspecified",
-                                responseBody.parameters?.date?:"",
-                                responseBody.parameters?.time?:"",
+                                structuredResponse.parameters?.date?:"",
+                                structuredResponse.parameters?.time?:"",
                                 status="pending_approval"
                             ),
                             onSuccess={
-                                onSuccess(responseBody.user_message)
+                                onSuccess(structuredResponse.user_message?:"")
                             },
-                            onFailure=onSuccess
+                            onFailure=onFailure
                         )
                     }
                     else->{
-                        onSuccess(responseBody.user_message)
+                        onSuccess(structuredResponse.user_message?:"")
                     }
                 }
 
-            }else{
-                onFailure(response.status.description)
+            }else {
+                onFailure(responseBody.error?.message?:response.status.description)
             }
 
 

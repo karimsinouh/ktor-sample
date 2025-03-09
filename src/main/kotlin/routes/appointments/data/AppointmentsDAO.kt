@@ -48,7 +48,7 @@ class AppointmentsDAO {
     fun getAllByPhoneNumber(phoneNumber:String):List<AppointmentModel>{
         return transaction {
             AppointmentsTable.selectAll()
-                .where(AppointmentsTable.status eq phoneNumber)
+                .where(AppointmentsTable.phoneNumber eq phoneNumber)
                 .orderBy(AppointmentsTable.id to SortOrder.DESC)
                 .map {
                     AppointmentModel.fromResultRow(it)

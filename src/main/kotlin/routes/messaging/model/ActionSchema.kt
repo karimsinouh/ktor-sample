@@ -26,25 +26,25 @@ val schema=AppointmentAction(
                     time = PropertyField(type = "string", description = "The time for the appointment, formatted as HH:mm."),
                     note = PropertyField(type = "string", description = "a note about this appointment"),
                 ),
-                required = emptyList(),
-                additionalProperties = false
+                additionalProperties = false,
+                required = listOf("date","time","note")
             ),
             user_message = UserMessageProperty(
                 type="string",
                 description = "A message to return to the client."
             )
         ),
-        required = listOf("action","user_message"),
+        required = listOf("action","user_message","parameters"),
         additionalProperties = false
     ),
     strict = true
 )
 
-val responseFormat=ResponseFormat(json_schema = schema)
+val responseFormat=ResponseFormat(json_schema = schema, type = "json_schema")
 
 @Serializable
 data class ResponseFormat(
-    val type:String="json_schema",
+    val type:String,
     val json_schema:AppointmentAction,
 )
 
@@ -82,7 +82,7 @@ data class ParametersProperty(
     val type: String,
     val description: String,
     val properties: ParametersProperties,
-    val required: List<String>,
+    val required: List<String>?=null,
     val additionalProperties: Boolean
 )
 

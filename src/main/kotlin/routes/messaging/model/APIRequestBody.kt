@@ -22,23 +22,25 @@ data class RequestBody(
 )
 
 @Serializable
+data class ResponseBody(
+    val error: APIError?=null,
+    val choices:List<APIChoice>?=null
+)
+
+
+@Serializable
+data class StructuredResponseBody(
+    val action:String?=null,
+    val parameters:Parameters?=null,
+    val user_message:String?=null,
+)
+
+
+@Serializable
 data class Parameters(
     val date:String?=null,
     val note:String?=null,
     val time:String?=null
-)
-
-@Serializable
-data class StructuredResponseBody(
-    val action:String,
-    val parameters:Parameters?=null,
-    val user_message:String,
-)
-
-@Serializable
-data class ResponseBody(
-    val error: APIError?=null,
-    val choices:List<APIChoice>
 )
 
 @Serializable

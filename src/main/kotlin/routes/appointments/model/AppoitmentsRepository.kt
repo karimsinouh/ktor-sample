@@ -41,6 +41,7 @@ class AppointmentsRepository(
         onSuccess: suspend (List<AppointmentModel>)->Unit,
         onFailure: suspend (String)->Unit
     ){
+
         try {
             val appointments=dao.getAllByPhoneNumber(phoneNumber)
             onSuccess(appointments)

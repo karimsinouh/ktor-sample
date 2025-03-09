@@ -6,6 +6,7 @@ import com.example.core.model.getCorrectPhoneNumberFormat
 import com.example.core.model.successResponse
 import com.example.routes.messaging.model.AIMessage
 import com.example.routes.messaging.model.ChatRepository
+import com.example.routes.messaging.model.MessageModel
 import com.example.routes.messaging.model.WhatsAppMessageResponse
 import io.ktor.http.*
 import io.ktor.server.request.*
@@ -71,6 +72,41 @@ fun Routing.messagesReceiver(
         println(e.message?:"Message receiving failed")
         failureResponse(e.message?:"Message receiving failed")
     }
+
+}
+
+fun Routing.testMessagesReceiver(repo: ChatRepository)
+=get("/messages/testMessagesReceiver") {
+
+//    try {
+//
+//
+//
+//
+//        val clientPhoneNumber = "+212677198667"
+//        val text = "show me all my appointments"
+//        val messages= listOf(MessageModel(AIMessage.ROLE_USER,text,clientPhoneNumber))
+//
+//        //generate AI response for the user message
+//        repo.generateAIResponse(
+//            clientPhoneNumber = clientPhoneNumber,
+//            messages = messages,
+//            onSuccess = {aiResponse->
+//
+//                println("AI responded a message")
+//                println(aiResponse)
+//
+//            },
+//            onFailure = {
+//                failureResponse(it)
+//                println("/MessagesReceiver $it")
+//            }
+//        )
+//
+//    } catch (e: Exception) {
+//        println(e.message?:"Message receiving failed")
+//        failureResponse(e.message?:"Message receiving failed")
+//    }
 
 }
 
