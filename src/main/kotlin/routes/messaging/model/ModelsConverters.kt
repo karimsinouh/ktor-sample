@@ -1,6 +1,5 @@
 package com.example.routes.messaging.model
 
-import com.example.routes.messaging.data.GenerateAIResponse
 import org.jetbrains.exposed.sql.ResultRow
 
 fun ResultRow.toMessage(): MessageModel {
@@ -13,9 +12,9 @@ fun ResultRow.toMessage(): MessageModel {
     )
 }
 
-fun List<MessageModel>.toAIMessages():List<GenerateAIResponse.AIMessage>{
+fun List<MessageModel>.toAIMessages():List<AIMessage>{
     return map {
-        val role=if (it.sender=="assistant") GenerateAIResponse.AIMessage.ROLE_ASSISTANT else GenerateAIResponse.AIMessage.ROLE_USER
-        GenerateAIResponse.AIMessage(role = role, content = it.message)
+        val role=if (it.sender=="assistant") AIMessage.ROLE_ASSISTANT else AIMessage.ROLE_USER
+        AIMessage(role = role, content = it.message)
     }
 }

@@ -110,6 +110,7 @@ class GenerateAIResponse(
         messages: List<MessageModel>
     ):List<AIMessage>{
 
+
         val recentMessages=messages.toAIMessages().toMutableList()
 
         val trainingMessage=getTrainingMessage(user)
