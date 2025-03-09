@@ -13,8 +13,6 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class GenerateAIResponse(
@@ -27,6 +25,7 @@ class GenerateAIResponse(
     suspend operator fun invoke(
         clientPhoneNumber:String,
         messages:List<MessageModel>,
+        onSendMessage: suspend (String?) -> Unit,
         onSuccess:suspend (String)->Unit,
         onFailure:suspend (String)->Unit,
     ){
@@ -52,53 +51,25 @@ class GenerateAIResponse(
                 setBody(body)
             }
 
-            val responseBody: ResponseBody =response.body()
 
-            println(responseBody)
-            //API Response
-            if (response.status.value==200 && responseBody.choices!=null){
 
-                val structuredResponse=Json.decodeFromString<StructuredResponseBody>(responseBody.choices[0].message.content)
-                println(structuredResponse)
 
-                //Act according to the action
-                when(structuredResponse.action){
-                    "normal_chat_message"->{
-                        onSuccess(structuredResponse.user_message?:"")
-                    }
-                    "retrieve_appointments"->{
-                        appointmentsRepository.getByPhoneNumber(
-                            phoneNumber = clientPhoneNumber,
-                            onSuccess = {
-                                onSuccess(AppointmentModel.listToText(it))
-                            },
-                            onFailure=onFailure
-                        )
-                    }
-                    "schedule_appointment"->{
-                        appointmentsRepository.insert(
-                            appointmentModel = AppointmentModel(
-                                0,
-                                clientPhoneNumber,
-                                user?.name?:"Username unspecified",
-                                structuredResponse.parameters?.date?:"",
-                                structuredResponse.parameters?.time?:"",
-                                status="pending_approval"
-                            ),
-                            onSuccess={
-                                onSuccess(structuredResponse.user_message?:"")
-                            },
-                            onFailure=onFailure
-                        )
-                    }
-                    else->{
-                        onSuccess(structuredResponse.user_message?:"")
-                    }
-                }
+           validateResponse(
+               response=response,
+               onSuccess = {structuredResponse->
 
-            }else {
-                onFailure(responseBody.error?.message?:response.status.description)
-            }
+                   handleActions(
+                       clientPhoneNumber=clientPhoneNumber,
+                       structuredResponse=structuredResponse,
+                       user=user,
+                       onSendMessage=onSendMessage,
+                       onSuccess=onSuccess,
+                       onFailure=onFailure
+                   )
+
+               },
+               onFailure=onFailure
+           )
 
 
         }catch (e:Exception){
@@ -106,6 +77,95 @@ class GenerateAIResponse(
         }
 
 
+
+    }
+
+    private suspend fun handleActions(
+        clientPhoneNumber: String,
+        structuredResponse: StructuredResponseBody,
+        user:UserModel?,
+        onSendMessage:suspend (String?)->Unit,
+        onSuccess: suspend (String) -> Unit,
+        onFailure: suspend (String) -> Unit
+    ){
+        //Act according to the action
+        when(structuredResponse.action){
+
+            Actions.NORMAL_CHAT_MESSAGE-> onSuccess(structuredResponse.user_message?:"")
+
+            Actions.RETRIEVE_APPOINTMENTS->{
+                onSendMessage(structuredResponse.user_message)
+                retrieveAppointments(clientPhoneNumber,onSuccess,onFailure)
+            }
+
+            Actions.SCHEDULE_APPOINTMENT-> scheduleAppointment(structuredResponse,clientPhoneNumber,user,onSuccess,onFailure)
+
+            else-> onSuccess(structuredResponse.user_message?:"")
+
+        }
+    }
+
+    private suspend fun scheduleAppointment(
+        structuredResponse: StructuredResponseBody,
+        clientPhoneNumber: String,
+        user:UserModel?,
+        onSuccess: suspend (String) -> Unit,
+        onFailure: suspend (String) -> Unit
+    ){
+        appointmentsRepository.insert(
+            appointmentModel = AppointmentModel(
+                0,
+                clientPhoneNumber,
+                user?.name?:"Username unspecified",
+                structuredResponse.parameters?.date?:"",
+                structuredResponse.parameters?.time?:"",
+                status="pending_approval"
+            ),
+            onSuccess={
+                onSuccess(structuredResponse.user_message?:"")
+            },
+            onFailure=onFailure
+        )
+    }
+
+    private suspend fun retrieveAppointments(
+        clientPhoneNumber: String,
+        onSuccess: suspend (String) -> Unit,
+        onFailure: suspend (String) -> Unit
+    ){
+        appointmentsRepository.getByPhoneNumber(
+            phoneNumber = clientPhoneNumber,
+            onSuccess = {
+                onSuccess(AppointmentModel.listToText(it))
+            },
+            onFailure=onFailure
+        )
+    }
+
+    private suspend fun validateResponse(
+        response:HttpResponse,
+        onSuccess: suspend (StructuredResponseBody) -> Unit,
+        onFailure: suspend (String) -> Unit
+    ){
+
+        try {
+
+            val responseBody: ResponseBody =response.body()
+
+            //API Response
+            if (response.status.value==200 && responseBody.choices!=null){
+
+                val structuredResponse=Json.decodeFromString<StructuredResponseBody>(
+                    responseBody.choices[0].message.content
+                )
+                onSuccess(structuredResponse)
+
+            }else {
+                onFailure(responseBody.error?.message?:response.status.description)
+            }
+        }catch (e:Exception){
+            onFailure(e.message?:"Failure validating response")
+        }
 
     }
 
@@ -126,7 +186,7 @@ class GenerateAIResponse(
     private fun getTrainingMessage(user:UserModel?): AIMessage {
         val trainingMessageBuilder=StringBuilder()
         trainingMessageBuilder.apply {
-            append("You're an assistant working for a dentist. ")
+            append("You're an assistant working for a dentist in 2025. ")
             append("you can remind customers about their appointments schedule new ones.")
             if (user!=null)
                 append("some info about the customer: $user ")

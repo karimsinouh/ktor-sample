@@ -1,12 +1,16 @@
 package com.example.routes.messaging.model
 
 import kotlinx.serialization.Serializable
+import javax.swing.Action
 
-val actions=listOf(
-    "retrieve_appointments",
-    "schedule_appointment",
-    "normal_chat_message"
-)
+object Actions{
+    const val RETRIEVE_APPOINTMENTS="retrieve_appointments"
+    const val SCHEDULE_APPOINTMENT="schedule_appointment"
+    const val NORMAL_CHAT_MESSAGE="normal_chat_message"
+
+    val actions= listOf(RETRIEVE_APPOINTMENTS, SCHEDULE_APPOINTMENT, NORMAL_CHAT_MESSAGE)
+
+}
 
 val schema=AppointmentAction(
     name="appointment_action",
@@ -16,7 +20,7 @@ val schema=AppointmentAction(
             action = ActionProperty(
                 type = "string",
                 description = "The action to be taken regarding appointments.",
-                enum = actions
+                enum = Actions.actions
             ),
             parameters = ParametersProperty(
                 type = "object",

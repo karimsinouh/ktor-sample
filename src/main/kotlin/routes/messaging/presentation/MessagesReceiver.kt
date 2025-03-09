@@ -30,10 +30,10 @@ fun Routing.messagesReceiver(
         val requestBody = call.receive<WhatsAppMessageResponse>()
         val message= extractMessageAndSender(requestBody)
 
-
         val clientPhoneNumber = getCorrectPhoneNumberFormat(message.first)
         val text = message.second
 
+        //store the client message
         repo.messages.insert("user",clientPhoneNumber, text)
 
         //get the last 10 messages from this conversation from the database
@@ -45,9 +45,6 @@ fun Routing.messagesReceiver(
             clientPhoneNumber = clientPhoneNumber,
             messages = messages,
             onSuccess = {aiResponse->
-
-                println("AI responded a message")
-                println(aiResponse)
 
                 //store the AI response in the database
                 repo.messages.insert(AIMessage.ROLE_ASSISTANT,clientPhoneNumber,aiResponse)
@@ -62,7 +59,18 @@ fun Routing.messagesReceiver(
 
 
             },
+            onSendMessage = {
+                //not the final message, we'll send another message from the onSuccess lambda
+                if (it!=null){
+                    //store the AI response in the database
+                    repo.messages.insert(AIMessage.ROLE_ASSISTANT,clientPhoneNumber,it)
+                    //send the AI response back to the user via WhatsApp API
+                    repo.sendWhatsappMessage(clientPhoneNumber, it, {}, ::failureResponse)
+                }
+            },
             onFailure = {
+                //send a message to the user to let him know that server encountered an error
+                repo.sendWhatsappMessage(clientPhoneNumber, "We're really sorry. We encountered an unexpected error. Please try again later. Thank you.", {}, ::failureResponse)
                 failureResponse(it)
                 println("/MessagesReceiver $it")
             }
@@ -72,41 +80,6 @@ fun Routing.messagesReceiver(
         println(e.message?:"Message receiving failed")
         failureResponse(e.message?:"Message receiving failed")
     }
-
-}
-
-fun Routing.testMessagesReceiver(repo: ChatRepository)
-=get("/messages/testMessagesReceiver") {
-
-//    try {
-//
-//
-//
-//
-//        val clientPhoneNumber = "+212677198667"
-//        val text = "show me all my appointments"
-//        val messages= listOf(MessageModel(AIMessage.ROLE_USER,text,clientPhoneNumber))
-//
-//        //generate AI response for the user message
-//        repo.generateAIResponse(
-//            clientPhoneNumber = clientPhoneNumber,
-//            messages = messages,
-//            onSuccess = {aiResponse->
-//
-//                println("AI responded a message")
-//                println(aiResponse)
-//
-//            },
-//            onFailure = {
-//                failureResponse(it)
-//                println("/MessagesReceiver $it")
-//            }
-//        )
-//
-//    } catch (e: Exception) {
-//        println(e.message?:"Message receiving failed")
-//        failureResponse(e.message?:"Message receiving failed")
-//    }
 
 }
 

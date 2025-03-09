@@ -35,11 +35,16 @@ data class AppointmentModel(
 
             list.forEachIndexed { i, it ->
                 strBuilder.append("""
-                    -Appointment #${i+1}
-                       Date: ${it.date} 
-                       Time: ${it.time}
-                       Note: ${it.note}
-                       Status: ${it.status}
+                   -Appointment #${i+1}
+                   
+                       Date: *${it.date}* 
+                       
+                       Time: *${it.time}*
+                       
+                       Note: *${it.note}*
+                       
+                       Status: *${it.status}*
+                    
                     
                 """.trimIndent())
             }
