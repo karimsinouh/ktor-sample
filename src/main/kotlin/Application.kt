@@ -11,8 +11,7 @@ fun main(args: Array<String>) {
 fun Application.module() {
 
     val dependencyInjectionModule=DIModule()
-
     configureRouting(dependencyInjectionModule)
-    configureDatabase()
+    //configureDatabase()
 
 }
