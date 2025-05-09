@@ -95,10 +95,20 @@ class GenerateAIResponse(
 
             Actions.RETRIEVE_APPOINTMENTS->{
                 onSendMessage(structuredResponse.user_message)
-                retrieveAppointments(clientPhoneNumber,onSuccess,onFailure)
+                retrieveAppointments(
+                    clientPhoneNumber,
+                    onSuccess,
+                    onFailure
+                )
             }
 
-            Actions.SCHEDULE_APPOINTMENT-> scheduleAppointment(structuredResponse,clientPhoneNumber,user,onSuccess,onFailure)
+            Actions.SCHEDULE_APPOINTMENT-> scheduleAppointment(
+                structuredResponse,
+                clientPhoneNumber,
+                user,
+                onSuccess,
+                onFailure
+            )
 
             else-> onSuccess(structuredResponse.user_message?:"")
 
@@ -175,7 +185,7 @@ class GenerateAIResponse(
     ):List<AIMessage>{
 
 
-        val recentMessages=messages.toAIMessages().toMutableList()
+        val recentMessages=messages.map { it.toAiMessage() }.toMutableList()
 
         val trainingMessage=getTrainingMessage(user)
         recentMessages.add(0,trainingMessage)

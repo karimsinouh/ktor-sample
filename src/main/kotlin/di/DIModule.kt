@@ -1,19 +1,15 @@
 package com.example.di
 
-import com.example.core.Constants
 import com.example.core.data.getMongoDatabase
 import com.example.routes.appointments.data.AppointmentsDAO
 import com.example.routes.appointments.model.AppointmentsRepository
 import com.example.routes.messaging.data.GenerateAIResponse
-import com.example.routes.messaging.data.MessagesDAO
 import com.example.routes.messaging.data.SendWhatsappMessage
-import com.example.routes.messaging.model.ChatRepository
-import com.example.routes.messaging.model.MessagesRepository
+import com.example.routes.messaging.domain.ChatRepository
+import com.example.routes.messaging.data.MessagesRepository
 import com.example.routes.templates.data.SendTemplateMessage
-import com.example.routes.templates.model.TemplatesRepository
+import com.example.routes.templates.domain.TemplatesRepository
 import com.example.routes.users.domain.UsersRepositoryImpl
-import com.mongodb.kotlin.client.coroutine.MongoClient
-import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.serialization.kotlinx.json.*
@@ -35,10 +31,6 @@ class DIModule {
         getMongoDatabase()
     }
 
-    private val messagesDao by lazy {
-        MessagesDAO()
-    }
-
 
     private val appointmentsDao by lazy {
         AppointmentsDAO()
@@ -49,7 +41,7 @@ class DIModule {
     }
 
     val messagesRepository by lazy {
-        MessagesRepository(messagesDao)
+        MessagesRepository(mongoDatabase)
     }
 
     val sendWhatsappMessage by lazy {

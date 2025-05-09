@@ -1,7 +1,7 @@
-package com.example.routes.templates.model
+package com.example.routes.templates.domain
 
 import com.example.routes.templates.data.SendTemplateMessage
-import io.ktor.client.*
+import com.example.routes.templates.model.WhatsappTemplateMessageRequest
 
 class TemplatesRepository(
     private val sendTemplatesRepository: SendTemplateMessage

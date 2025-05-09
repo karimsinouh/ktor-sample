@@ -5,8 +5,7 @@ import com.example.core.model.failureResponse
 import com.example.core.model.getCorrectPhoneNumberFormat
 import com.example.core.model.successResponse
 import com.example.routes.messaging.model.AIMessage
-import com.example.routes.messaging.model.ChatRepository
-import com.example.routes.messaging.model.MessageModel
+import com.example.routes.messaging.domain.ChatRepository
 import com.example.routes.messaging.model.WhatsAppMessageResponse
 import io.ktor.http.*
 import io.ktor.server.request.*
@@ -34,7 +33,7 @@ fun Routing.messagesReceiver(
         val text = message.second
 
         //store the client message
-        repo.messages.insert("user",clientPhoneNumber, text)
+        repo.messages.insert(AIMessage.ROLE_USER,text, clientPhoneNumber)
 
         //get the last 10 messages from this conversation from the database
         val messages=repo.messages.getLastMessages(clientPhoneNumber)

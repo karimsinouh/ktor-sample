@@ -2,9 +2,7 @@ package com.example.routes.messaging.presentation
 
 import com.example.core.model.failureResponse
 import com.example.core.model.successResponse
-import com.example.routes.messaging.model.MessagesRepository
-import io.ktor.http.*
-import io.ktor.server.response.*
+import com.example.routes.messaging.data.MessagesRepository
 import io.ktor.server.routing.*
 
 fun Routing.getMessages(messagesRepository: MessagesRepository){

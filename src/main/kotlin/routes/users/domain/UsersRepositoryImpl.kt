@@ -82,7 +82,9 @@ class UsersRepositoryImpl(
     )=try {
 
         val result=mongoDatabase.getCollection<User>("users")
-            .find<User>().toList()
+            .find<User>()
+            .limit(30)
+            .toList()
 
         val users=result.map {
             it.toModel()
