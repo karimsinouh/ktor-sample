@@ -2,12 +2,12 @@ package com.example.routes.users.presentation
 
 import com.example.core.model.failureResponse
 import com.example.core.model.successResponse
+import com.example.routes.users.domain.UsersRepositoryImpl
 import com.example.routes.users.model.UserModel
-import com.example.routes.users.model.UsersRepository
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 
-fun Routing.usersRouting(repo: UsersRepository){
+fun Routing.usersRouting(repo: UsersRepositoryImpl){
 
     get("users/get/{phoneNumber}") {
         try {
@@ -24,7 +24,7 @@ fun Routing.usersRouting(repo: UsersRepository){
         }
     }
 
-    get("users/get") {
+    get("users/get")  {
         try {
             repo.getAllUsers(::successResponse, ::failureResponse)
         }catch (e:Exception){
@@ -35,6 +35,8 @@ fun Routing.usersRouting(repo: UsersRepository){
     post("users/update") {
         try {
             val user=call.receive<UserModel>()
+
+            print(user.toString())
 
             repo.update(
                 user=user,

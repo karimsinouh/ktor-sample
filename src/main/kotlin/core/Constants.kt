@@ -6,6 +6,9 @@ object Constants {
     const val DATABASE_USER="appointments_whatsapp_ai_bot_user"
     const val DATABASE_PASSWORD="1NnF9HaHdiDOA1NIE4HTQFA0gmD8O3Zj"
 
+    const val MONGO_DATABASE_NAME="aqwas_database"
+    const val MONGO_DATABASE_CREDENTIALS="mongodb+srv://aqwas:RJTRe2GtXHMglgGF@cluster0.rxanrs5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+
     const val AI_API_KEY="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"
     const val AI_MODEL="gpt-4o-mini"
 

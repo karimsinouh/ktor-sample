@@ -1,11 +1,12 @@
 package com.example.routes.users.model
 
 import kotlinx.serialization.Serializable
+import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 
-@Serializable
-data class UserModel(
-    val id:String?=null,
+data class User(
+    @BsonId
+    val id:ObjectId,
     val name:String,
     val phoneNumber:String,
     val email:String?=null,
@@ -13,9 +14,10 @@ data class UserModel(
     val feedbackCollected:Boolean?=false,
     val businessId:String?="",
 ){
-    fun toRequest():User{
-        return User(
-            ObjectId(),
+
+    fun toModel():UserModel{
+        return UserModel(
+            id.toString(),
             name,
             phoneNumber,
             email,
@@ -24,4 +26,5 @@ data class UserModel(
             businessId,
         )
     }
+
 }

@@ -6,8 +6,8 @@ import com.example.routes.appointments.model.AppointmentModel
 import com.example.routes.appointments.model.AppointmentsRepository
 import com.example.routes.messaging.model.*
 import com.example.routes.messaging.model.AIMessage.Companion.ROLE_DEVELOPER
+import com.example.routes.users.data.UsersRepository
 import com.example.routes.users.model.UserModel
-import com.example.routes.users.model.UsersRepository
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
