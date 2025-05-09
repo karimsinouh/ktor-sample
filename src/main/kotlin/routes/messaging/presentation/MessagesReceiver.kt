@@ -29,8 +29,12 @@ fun Routing.messagesReceiver(
         val requestBody = call.receive<WhatsAppMessageResponse>()
         val message= extractMessageAndSender(requestBody)
 
+
         val clientPhoneNumber = getCorrectPhoneNumberFormat(message.first)
         val text = message.second
+
+        println("-> message received -> $text from $clientPhoneNumber ")
+
 
         //store the client message
         repo.messages.insert(AIMessage.ROLE_USER,text, clientPhoneNumber)

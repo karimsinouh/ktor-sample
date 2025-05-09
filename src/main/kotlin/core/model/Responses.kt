@@ -3,10 +3,9 @@ package com.example.core.model
 import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
 
 suspend fun RoutingContext.failureResponse(error:String){
+    println("->ERROR->: $error ")
     call.respond(
         HttpStatusCode.InternalServerError,
        mapOf(
