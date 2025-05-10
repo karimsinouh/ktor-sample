@@ -10,9 +10,4 @@ object Constants {
     const val WHATSAPP_VERIFICATION_TOKEN="karimsinouh"
 
 
-    fun trainingMessage():String{
-        val message=""
-        return message
-    }
-
 }

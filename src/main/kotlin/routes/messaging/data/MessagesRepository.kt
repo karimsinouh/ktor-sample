@@ -3,6 +3,7 @@ package com.example.routes.messaging.data
 import com.example.routes.messaging.model.MessageModel
 import com.example.routes.messaging.model.MessagesCollection
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Sorts.ascending
 import com.mongodb.client.model.Sorts.descending
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.flow.toList
@@ -20,7 +21,8 @@ class MessagesRepository(
         message:String,
         userPhoneNumber:String,
     ){
-        val obj=MessagesCollection(ObjectId(),sender,message, userPhoneNumber)
+        val timestamp=System.currentTimeMillis()
+        val obj=MessagesCollection(sender,message, userPhoneNumber, timestamp)
         collection.insertOne(obj)
     }
 
@@ -29,8 +31,8 @@ class MessagesRepository(
     ):List<MessageModel>{
         val result=collection.find()
             .filter(Filters.eq("phoneNumber",userPhoneNumber))
-            .sort(descending(MessagesCollection::id.name))
-            .limit(10)
+            .sort(descending(MessagesCollection::timestamp.name))
+            .limit(5)
             .toList()
 
         return result.map { it.toModel() }

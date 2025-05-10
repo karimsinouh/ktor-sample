@@ -50,7 +50,7 @@ fun Routing.messagesReceiver(
             onSuccess = {aiResponse->
 
                 //store the AI response in the database
-                repo.messages.insert(AIMessage.ROLE_ASSISTANT,clientPhoneNumber,aiResponse)
+                repo.messages.insert(AIMessage.ROLE_ASSISTANT,aiResponse,clientPhoneNumber)
 
                 //send the AI response back to the user via WhatsApp API
                 repo.sendWhatsappMessage(
