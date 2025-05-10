@@ -1,21 +1,29 @@
 package com.example.routes.appointments.model
 
-import com.example.routes.appointments.data.AppointmentsDAO
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Sorts
+import com.mongodb.client.model.Updates
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.datetime.*
-import org.jetbrains.exposed.exceptions.ExposedSQLException
-import org.postgresql.util.PSQLException
-
 
 class AppointmentsRepository(
-    private val dao:AppointmentsDAO,
+    private val mongoDatabase: MongoDatabase
 ) {
+
+    private val collection=mongoDatabase.getCollection<AppointmentsCollection>("appointments")
 
     suspend fun getAll(
         onSuccess: suspend (List<AppointmentModel>)->Unit,
         onFailure: suspend (String)->Unit
     ){
         try {
-            val appointments=dao.getAll()
+            val result=collection.find()
+                .sort(Sorts.descending(AppointmentsCollection::id.name))
+                .limit(20)
+
+            val appointments=result.map { it.toModel() }.toList()
             onSuccess(appointments)
         }catch (e:Exception){
             onFailure(e.message?:"failed to retrieve appointments from database")
@@ -28,8 +36,15 @@ class AppointmentsRepository(
         onFailure: suspend (String)->Unit
     ){
         try {
-            val appointments=dao.getAllByStatus(status)
+
+            val result=collection.find()
+                .filter(Filters.eq("status",status))
+                .sort(Sorts.descending(AppointmentsCollection::id.name))
+                .limit(20)
+
+            val appointments=result.map { it.toModel() }.toList()
             onSuccess(appointments)
+
         }catch (e:Exception){
             onFailure(e.message?:"failed to retrieve appointments from database")
         }
@@ -43,8 +58,15 @@ class AppointmentsRepository(
     ){
 
         try {
-            val appointments=dao.getAllByPhoneNumber(phoneNumber)
+
+            val result=collection.find()
+                .filter(Filters.eq("phoneNumber",phoneNumber))
+                .sort(Sorts.descending(AppointmentsCollection::id.name))
+                .limit(20)
+
+            val appointments=result.map { it.toModel() }.toList()
             onSuccess(appointments)
+
         }catch (e:Exception){
             onFailure(e.message?:"failed to retrieve appointments from database")
         }
@@ -56,17 +78,12 @@ class AppointmentsRepository(
         onFailure: suspend (String)->Unit
     ){
         try {
-            dao.insert(appointmentModel)
-            onSuccess()
-        } catch (e:ExposedSQLException){
 
-            // Check if the exception is due to a duplicate key violation
-            if (e.cause is PSQLException && (e.cause as PSQLException).sqlState == "23505")
-                onFailure("Duplicate appointment: An appointment already exists for this client, date, and time.")
+            val result=collection.insertOne(appointmentModel.toCollection())
+            if (result.insertedId!=null)
+                onSuccess()
             else
-                // Handle other SQL exceptions
-                onFailure("An error occurred while processing your request.")
-
+                onFailure("Couldn't insert appointment into database")
 
         }catch (e:Exception){
             onFailure(e.message?:"Failed to insert appointment to database")
@@ -79,23 +96,42 @@ class AppointmentsRepository(
         onFailure: suspend (String)->Unit
     ){
         try {
-            dao.update(appointmentModel)
-            onSuccess()
+
+            val filter=Filters.eq("id",appointmentModel.id)
+
+            val updates=Updates.combine(
+                Updates.set(AppointmentsCollection::clientName.name,appointmentModel.clientName),
+                Updates.set(AppointmentsCollection::phoneNumber.name,appointmentModel.phoneNumber),
+                Updates.set(AppointmentsCollection::note.name,appointmentModel.note),
+                Updates.set(AppointmentsCollection::date.name,appointmentModel.date),
+                Updates.set(AppointmentsCollection::time.name,appointmentModel.time),
+                Updates.set(AppointmentsCollection::status.name,appointmentModel.status),
+            )
+
+            val result=collection.updateOne(filter,updates)
+
+            if (result.modifiedCount>0)
+                onSuccess()
+            else
+                onFailure("Could not update this appointment")
+
         }catch (e:Exception){
             onFailure(e.message?:"Failed to update appointment")
         }
     }
 
     suspend fun delete(
-        appointmentId: Int,
+        appointmentId: String,
         onSuccess: suspend ()->Unit,
         onFailure: suspend (String)->Unit
     ){
         try {
-            dao.delete(appointmentId)
-            onSuccess()
+            val result=collection.deleteOne(Filters.eq("id",appointmentId))
+            if (result.deletedCount>0)
+                onSuccess()
+            onFailure("Failed to delete appointment")
         }catch (e:Exception){
-            onFailure(e.message?:"Failed to update appointment")
+            onFailure(e.message?:"Failed to delete appointment")
         }
     }
 

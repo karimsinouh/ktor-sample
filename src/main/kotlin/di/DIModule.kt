@@ -1,7 +1,6 @@
 package com.example.di
 
 import com.example.core.data.getMongoDatabase
-import com.example.routes.appointments.data.AppointmentsDAO
 import com.example.routes.appointments.model.AppointmentsRepository
 import com.example.routes.messaging.data.GenerateAIResponse
 import com.example.routes.messaging.data.SendWhatsappMessage
@@ -32,10 +31,6 @@ class DIModule {
     }
 
 
-    private val appointmentsDao by lazy {
-        AppointmentsDAO()
-    }
-
     val generateAIResponse by lazy {
         GenerateAIResponse(client,usersRepository,appointmentsRepository)
     }
@@ -65,7 +60,7 @@ class DIModule {
     }
 
     val appointmentsRepository by lazy {
-        AppointmentsRepository(appointmentsDao)
+        AppointmentsRepository(mongoDatabase)
     }
 
 }

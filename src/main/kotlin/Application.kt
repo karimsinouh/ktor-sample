@@ -1,7 +1,6 @@
 package com.example
 
-import com.example.core.data.configureDatabase
-import com.example.di.DIModule
+ import com.example.di.DIModule
 import io.ktor.server.application.*
 
 fun main(args: Array<String>) {

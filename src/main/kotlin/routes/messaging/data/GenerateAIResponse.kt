@@ -1,7 +1,6 @@
 package com.example.routes.messaging.data
 
-import com.example.core.Constants.AI_API_KEY
-import com.example.core.Constants.AI_MODEL
+import com.example.core.ConfigureAIModel
 import com.example.routes.appointments.model.AppointmentModel
 import com.example.routes.appointments.model.AppointmentsRepository
 import com.example.routes.messaging.model.*
@@ -14,6 +13,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.json.Json
+import org.bson.types.ObjectId
 
 class GenerateAIResponse(
     private val client:HttpClient,
@@ -41,10 +41,10 @@ class GenerateAIResponse(
                 url("https://api.openai.com/v1/chat/completions")
                 headers {
                     append(HttpHeaders.ContentType,"application/json")
-                    append(HttpHeaders.Authorization,"Bearer $AI_API_KEY")
+                    append(HttpHeaders.Authorization,"Bearer ${ConfigureAIModel.AI_API_KEY}")
                 }
                 val body= RequestBody(
-                    model = AI_MODEL,
+                    model = ConfigureAIModel.AI_MODEL,
                     messages = recentMessages,
                     response_format = responseFormat
                 )
@@ -124,7 +124,7 @@ class GenerateAIResponse(
     ){
         appointmentsRepository.insert(
             appointmentModel = AppointmentModel(
-                0,
+                "",
                 clientPhoneNumber,
                 user?.name?:"Username unspecified",
                 structuredResponse.parameters?.date?:"",
@@ -184,31 +184,13 @@ class GenerateAIResponse(
         messages: List<MessageModel>
     ):List<AIMessage>{
 
-
         val recentMessages=messages.map { it.toAiMessage() }.toMutableList()
 
-        val trainingMessage=getTrainingMessage(user)
+        val trainingMessage=ConfigureAIModel.getTrainingMessage(user)
         recentMessages.add(0,trainingMessage)
 
         return recentMessages
     }
-
-    private fun getTrainingMessage(user:UserModel?): AIMessage {
-        val trainingMessageBuilder=StringBuilder()
-        trainingMessageBuilder.apply {
-            append("You're an assistant working for a dentist in 2025. ")
-            append("you can remind customers about their appointments schedule new ones.")
-            if (user!=null)
-                append("some info about the customer: $user ")
-        }
-
-        val trainingMessage= AIMessage(
-            role = ROLE_DEVELOPER,
-            content = trainingMessageBuilder.toString()
-        )
-        return trainingMessage
-    }
-
 
 
 }
