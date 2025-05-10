@@ -32,8 +32,9 @@ class MessagesRepository(
         val result=collection.find()
             .filter(Filters.eq("phoneNumber",userPhoneNumber))
             .sort(descending(MessagesCollection::timestamp.name))
-            .limit(5)
+            .limit(15)
             .toList()
+            .reversed()
 
         return result.map { it.toModel() }
     }
