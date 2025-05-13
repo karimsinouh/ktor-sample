@@ -63,12 +63,12 @@ Style Rules:
         if (user!=null)
             str.append("info about user: $user")
         else
-            """
+            str.append("""
                 If first time talking, ask three onboarding questions one by one:
                 - Preferred language (Darija باللهجة المغربية, Arabic بالعربية, French en Français, English, Spanish en Español)
                 - Name
                 - Industry or business type (e.g., dentist, salon, bakery, clothing shop...)
-            """.trimIndent()
+            """.trimIndent())
         str.append("current time is $time.")
 
         val trainingMessage= AIMessage(
