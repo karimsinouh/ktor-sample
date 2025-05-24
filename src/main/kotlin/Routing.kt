@@ -25,8 +25,7 @@ fun Application.configureRouting(module:DIModule) {
             call.respondText("Hello World!")
         }
 
-        messagesRouting(module.chatRepository)
-
+        messagesRouting(module.chatRepository,module.usersRepository)
         usersRouting(module.usersRepository)
 
         templatesRouting(module.templatesRepository)

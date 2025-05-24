@@ -32,7 +32,7 @@ class DIModule {
 
 
     val generateAIResponse by lazy {
-        GenerateAIResponse(client,usersRepository,appointmentsRepository)
+        GenerateAIResponse(client,usersRepository)
     }
 
     val messagesRepository by lazy {
