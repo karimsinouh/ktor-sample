@@ -1,5 +1,6 @@
 package com.example.routes.users.domain
 
+import com.example.routes.messaging.model.StructuredResponseBody
 import com.example.routes.users.data.UsersRepository
 import com.example.routes.users.model.User
 import com.example.routes.users.model.UserModel
@@ -33,6 +34,19 @@ class UsersRepositoryImpl(
         } catch (e:Exception){
             onFailure("From model: ${e.message}"?:"Couldn't insert user")
         }
+    }
+
+    override suspend fun insertFromAIResponse(
+        phoneNumber:String,
+        structuredResponseBody: StructuredResponseBody,
+        onSuccess: suspend () -> Unit,
+        onFailure: suspend (String) -> Unit
+    ) {
+        val name=structuredResponseBody.parameters?.client_name?:"Unknown"
+        val email=structuredResponseBody.parameters?.client_email
+        val businessInfo=structuredResponseBody.parameters?.business_information
+        val client=UserModel(null,name,phoneNumber,email,businessInfo)
+        insert(client,onSuccess,onFailure)
     }
 
     override suspend fun getUserByPhoneNumber(

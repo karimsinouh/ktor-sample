@@ -6,6 +6,7 @@ import com.example.routes.appointments.model.AppointmentsRepository
 import com.example.routes.messaging.model.*
 import com.example.routes.messaging.model.AIMessage.Companion.ROLE_DEVELOPER
 import com.example.routes.users.data.UsersRepository
+import com.example.routes.users.model.User
 import com.example.routes.users.model.UserModel
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -18,15 +19,16 @@ import org.bson.types.ObjectId
 class GenerateAIResponse(
     private val client:HttpClient,
     private val usersRepository: UsersRepository,
-    private val appointmentsRepository: AppointmentsRepository,
 ) {
 
 
     suspend operator fun invoke(
         clientPhoneNumber:String,
         messages:List<MessageModel>,
-        onSendMessage: suspend (String?) -> Unit,
-        onSuccess:suspend (String)->Unit,
+        onSuccess:suspend (
+            structuredOutput:StructuredResponseBody,
+            user: UserModel?
+        )->Unit,
         onFailure:suspend (String)->Unit,
     ){
 
@@ -58,14 +60,16 @@ class GenerateAIResponse(
                response=response,
                onSuccess = {structuredResponse->
 
-                   handleActions(
-                       clientPhoneNumber=clientPhoneNumber,
-                       structuredResponse=structuredResponse,
-                       user=user,
-                       onSendMessage=onSendMessage,
-                       onSuccess=onSuccess,
-                       onFailure=onFailure
-                   )
+                   onSuccess(structuredResponse,user)
+
+//                   handleActions(
+//                       clientPhoneNumber=clientPhoneNumber,
+//                       structuredResponse=structuredResponse,
+//                       user=user,
+//                       onSendMessage=onSendMessage,
+//                       onSuccess=onSuccess,
+//                       onFailure=onFailure
+//                   )
 
                },
                onFailure=onFailure
@@ -91,66 +95,15 @@ class GenerateAIResponse(
         //Act according to the action
         when(structuredResponse.action){
 
-            Actions.NORMAL_CHAT_MESSAGE-> onSuccess(structuredResponse.user_message?:"")
+            ConfigureAIModel.Actions.NORMAL_CHAT_MESSAGE-> onSuccess(structuredResponse.user_message?:"")
 
-            Actions.RETRIEVE_APPOINTMENTS->{
-                onSendMessage(structuredResponse.user_message)
-                retrieveAppointments(
-                    clientPhoneNumber,
-                    onSuccess,
-                    onFailure
-                )
-            }
-
-            Actions.SCHEDULE_APPOINTMENT-> scheduleAppointment(
-                structuredResponse,
-                clientPhoneNumber,
-                user,
-                onSuccess,
-                onFailure
-            )
+            ConfigureAIModel.Actions.RETRIEVE_CLIENT_INFORMATION-> {}
 
             else-> onSuccess(structuredResponse.user_message?:"")
 
         }
     }
 
-    private suspend fun scheduleAppointment(
-        structuredResponse: StructuredResponseBody,
-        clientPhoneNumber: String,
-        user:UserModel?,
-        onSuccess: suspend (String) -> Unit,
-        onFailure: suspend (String) -> Unit
-    ){
-        appointmentsRepository.insert(
-            appointmentModel = AppointmentModel(
-                "",
-                clientPhoneNumber,
-                user?.name?:"Username unspecified",
-                structuredResponse.parameters?.date?:"",
-                structuredResponse.parameters?.time?:"",
-                status="pending_approval"
-            ),
-            onSuccess={
-                onSuccess(structuredResponse.user_message?:"")
-            },
-            onFailure=onFailure
-        )
-    }
-
-    private suspend fun retrieveAppointments(
-        clientPhoneNumber: String,
-        onSuccess: suspend (String) -> Unit,
-        onFailure: suspend (String) -> Unit
-    ){
-        appointmentsRepository.getByPhoneNumber(
-            phoneNumber = clientPhoneNumber,
-            onSuccess = {
-                onSuccess(AppointmentModel.listToText(it))
-            },
-            onFailure=onFailure
-        )
-    }
 
     private suspend fun validateResponse(
         response:HttpResponse,

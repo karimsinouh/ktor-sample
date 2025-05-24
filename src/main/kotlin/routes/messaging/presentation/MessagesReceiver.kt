@@ -1,5 +1,6 @@
 package com.example.routes.messaging.presentation
 
+import com.example.core.ConfigureAIModel
 import com.example.core.Constants
 import com.example.core.model.failureResponse
 import com.example.core.model.getCorrectPhoneNumberFormat
@@ -7,10 +8,13 @@ import com.example.core.model.successResponse
 import com.example.routes.messaging.model.AIMessage
 import com.example.routes.messaging.domain.ChatRepository
 import com.example.routes.messaging.model.WhatsAppMessageResponse
+import com.example.routes.users.data.UsersRepository
+import com.example.routes.users.model.UserModel
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import java.io.ObjectInputFilter.Config
 
 /**
  * Receives messages from Whatsapp API and.
@@ -20,6 +24,7 @@ import io.ktor.server.routing.*
  * */
 fun Routing.messagesReceiver(
     repo: ChatRepository,
+    usersRepository: UsersRepository,
 )=post("/messages/messagesReceiver") {
 
     try {
@@ -28,15 +33,12 @@ fun Routing.messagesReceiver(
         //receive the user message and store it in the database
         val requestBody = call.receive<WhatsAppMessageResponse>()
         val message= extractMessageAndSender(requestBody)
-
-
         val clientPhoneNumber = getCorrectPhoneNumberFormat(message.first)
         val text = message.second
-
         println("-> message received -> $text from $clientPhoneNumber ")
 
 
-        //store the client message
+        //store the client message in database
         repo.messages.insert(AIMessage.ROLE_USER,text, clientPhoneNumber)
 
         //get the last 10 messages from this conversation from the database
@@ -47,29 +49,47 @@ fun Routing.messagesReceiver(
         repo.generateAIResponse(
             clientPhoneNumber = clientPhoneNumber,
             messages = messages,
-            onSuccess = {aiResponse->
+            onSuccess = {aiResponse,user->
 
                 //store the AI response in the database
-                repo.messages.insert(AIMessage.ROLE_ASSISTANT,aiResponse,clientPhoneNumber)
+                repo.messages.insert(AIMessage.ROLE_ASSISTANT,aiResponse.user_message?:"",clientPhoneNumber)
 
-                //send the AI response back to the user via WhatsApp API
-                repo.sendWhatsappMessage(
-                    phoneNumber = clientPhoneNumber,
-                    message=aiResponse,
-                    onSuccess = ::successResponse,
-                    onFailure = ::failureResponse
-                )
+                when(aiResponse.action){
 
+                    //normal chat message
+                    ConfigureAIModel.Actions.NORMAL_CHAT_MESSAGE->{
+                        //send the AI response back to the user via WhatsApp API
+                        repo.sendWhatsappMessage(
+                            phoneNumber = clientPhoneNumber,
+                            message=aiResponse.user_message?:"",
+                            onSuccess = ::successResponse,
+                            onFailure = ::failureResponse
+                        )
+                    }
 
-            },
-            onSendMessage = {
-                //not the final message, we'll send another message from the onSuccess lambda
-                if (it!=null){
-                    //store the AI response in the database
-                    repo.messages.insert(AIMessage.ROLE_ASSISTANT,clientPhoneNumber,it)
-                    //send the AI response back to the user via WhatsApp API
-                    repo.sendWhatsappMessage(clientPhoneNumber, it, {}, ::failureResponse)
+                    //save client details in the database
+                    ConfigureAIModel.Actions.SAVE_CLIENT_DETAILS->{
+                        //send the AI response back to the user via WhatsApp API
+                        usersRepository.insertFromAIResponse(
+                            clientPhoneNumber,
+                            aiResponse,
+                            onSuccess = {successResponse("inserted")},
+                            onFailure = ::failureResponse
+                        )
+
+                    }
+
+                    ConfigureAIModel.Actions.RETRIEVE_CLIENT_INFORMATION->{
+                        repo.sendWhatsappMessage(
+                            phoneNumber = clientPhoneNumber,
+                            message=aiResponse.user_message?:"",
+                            onSuccess = ::successResponse,
+                            onFailure = ::failureResponse
+                        )
+                    }
+
                 }
+
             },
             onFailure = {
                 //send a message to the user to let him know that server encountered an error

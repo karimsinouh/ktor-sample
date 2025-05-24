@@ -1,5 +1,6 @@
 package com.example.routes.messaging.model
 
+import com.example.core.ConfigureAIModel
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -31,16 +32,8 @@ data class ResponseBody(
 @Serializable
 data class StructuredResponseBody(
     val action:String?=null,
-    val parameters:Parameters?=null,
+    val parameters:ConfigureAIModel.Properties.Parameters?=null,
     val user_message:String?=null,
-)
-
-
-@Serializable
-data class Parameters(
-    val date:String?=null,
-    val note:String?=null,
-    val time:String?=null
 )
 
 @Serializable

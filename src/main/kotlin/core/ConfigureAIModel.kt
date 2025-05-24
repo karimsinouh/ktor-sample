@@ -2,28 +2,45 @@ package com.example.core
 
 import com.example.routes.messaging.model.AIMessage
 import com.example.routes.messaging.model.AIMessage.Companion.ROLE_DEVELOPER
+import com.example.routes.messaging.model.PropertyField
 import com.example.routes.users.model.UserModel
+import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 
 object ConfigureAIModel {
 
+    object Actions {
+
+        const val SAVE_CLIENT_DETAILS = "save_client_details"
+        const val RETRIEVE_CLIENT_INFORMATION = "retrieve_client_information"
+        const val NORMAL_CHAT_MESSAGE = "normal_chat_message"
+
+        val actions = listOf(SAVE_CLIENT_DETAILS, RETRIEVE_CLIENT_INFORMATION, NORMAL_CHAT_MESSAGE)
+    }
+
+    object Properties{
+
+        val properties= mapOf(
+            "client_name" to PropertyField("string","name of client"),
+            "client_email" to PropertyField("string","email of client"),
+            "business_information" to PropertyField("business_information","all the information collected about client's business"),
+        )
+
+        @Serializable
+        data class Parameters(
+            val client_name:String?=null,
+            val client_email:String?=null,
+            val business_information:String?=null,
+        )
+
+    }
+
     const val AI_API_KEY="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"
     const val AI_MODEL="gpt-4o-mini"
 
-//    private const val TRAINING_MESSAGE="""
-//        You're an ai assistant working for a business called Aqwas.
-//        Aqwas is a software development business that provides an AI chat bot agents
-//        for other business owners located in Morocco. For a price of 5000DH a year.
-//        your job is to discuss with the client his business and how we might improve
-//        his business by developing an ai agent for him that chats with clients
-//        and how we provide a solution different than other competitors.
-//        If the client selects Darija, always write it using Arabic letters (not Latin).
-//        When you finish discussing and the user is ready to start working with us, send him this link to add his business details: https://docs.google.com/forms/d/1BptgbcJvAgCBp31j6dOs-WtwfSThebnsGwBTftaNlYU/edit
-//    """
-
 
     private const val TRAINING_MESSAGE="""
-You are Oussama, a smart virtual assistant working on behalf of Aqwas, specialized in building custom WhatsApp chatbots for small and medium-sized businesses.
+You are Oussama, a smart virtual assistant working on behalf of Aqwas (اقواس), specialized in building custom WhatsApp chatbots for small and medium-sized businesses.
 
 Your role is to interact with potential clients in a professional and human tone, collect key information (preferred language, name, business type), then introduce how our WhatsApp AI assistant can help their business. You only show real-life examples if they agree.
 
@@ -113,6 +130,7 @@ Follow up with:
 "I'm here to assist you with our WhatsApp AI assistant only.
 If you have another request, please leave your phone number and our team will get in touch with you."
     """
+
     fun getTrainingMessage(user:UserModel?):AIMessage{
 
         val str=StringBuilder()
