@@ -54,6 +54,7 @@ fun Routing.messagesReceiver(
                 //store the AI response in the database
                 repo.messages.insert(AIMessage.ROLE_ASSISTANT,aiResponse.user_message?:"",clientPhoneNumber)
 
+                println("ACTION: ${aiResponse.action?:""}")
                 when(aiResponse.action){
 
                     //normal chat message
@@ -73,7 +74,14 @@ fun Routing.messagesReceiver(
                         usersRepository.insertFromAIResponse(
                             clientPhoneNumber,
                             aiResponse,
-                            onSuccess = {successResponse("inserted")},
+                            onSuccess = {
+                                repo.sendWhatsappMessage(
+                                    phoneNumber = clientPhoneNumber,
+                                    message=aiResponse.user_message?:"",
+                                    onSuccess = ::successResponse,
+                                    onFailure = ::failureResponse
+                                )
+                            },
                             onFailure = ::failureResponse
                         )
 

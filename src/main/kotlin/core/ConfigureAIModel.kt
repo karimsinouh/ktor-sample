@@ -15,7 +15,11 @@ object ConfigureAIModel {
         const val RETRIEVE_CLIENT_INFORMATION = "retrieve_client_information"
         const val NORMAL_CHAT_MESSAGE = "normal_chat_message"
 
-        val actions = listOf(SAVE_CLIENT_DETAILS, RETRIEVE_CLIENT_INFORMATION, NORMAL_CHAT_MESSAGE)
+        val actions = listOf(
+            SAVE_CLIENT_DETAILS,
+            RETRIEVE_CLIENT_INFORMATION,
+            NORMAL_CHAT_MESSAGE
+        )
     }
 
     object Properties{
