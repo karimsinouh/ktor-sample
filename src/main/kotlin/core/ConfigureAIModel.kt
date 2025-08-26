@@ -23,7 +23,7 @@ object ConfigureAIModel {
         val properties= mapOf(
             "client_name" to PropertyField("string","name of client"),
             "client_email" to PropertyField("string","email of client"),
-            "business_information" to PropertyField("business_information","all the information collected about client's business"),
+            "business_information" to PropertyField("string","all the information collected about client's business"),
         )
 
         @Serializable
