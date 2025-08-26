@@ -19,7 +19,8 @@ val schema = AgentAction(
                 type = "object",
                 description = "Parameters relevant to the action specified. This can include any data needed for the action.",
                 properties = ConfigureAIModel.Properties.properties, // This will be dynamically populated or left flexible
-                additionalProperties = false // Allows for any additional parameters
+                additionalProperties = false, // Allows for any additional parameters,
+                required = ConfigureAIModel.Properties.properties.keys.toList(),
             ),
             user_message = UserMessageProperty(
                 type = "string",
