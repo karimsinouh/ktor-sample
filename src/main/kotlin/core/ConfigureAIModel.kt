@@ -35,7 +35,7 @@ object ConfigureAIModel {
 
     }
 
-    const val AI_API_KEY="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"
+    const val AI_API_KEY="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"
     const val AI_MODEL="gpt-4o-mini"
 
 

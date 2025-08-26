@@ -1,5 +1,6 @@
 package com.example.routes.messaging.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -8,7 +9,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class WhatsAppMessageResponse(
-    val `object`: String,
+    @SerialName("object") val objectType: String,
     val entry: List<Entry>
 )
 
