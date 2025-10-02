@@ -11,8 +11,7 @@ data class User(
     val phoneNumber:String,
     val email:String?=null,
     val note:String?="",
-    val feedbackCollected:Boolean?=false,
-    val businessId:String?="",
+    val status: String?="pending",
 ){
 
     fun toModel():UserModel{
@@ -22,8 +21,7 @@ data class User(
             phoneNumber,
             email,
             note,
-            feedbackCollected,
-            businessId,
+            status
         )
     }
 

@@ -10,8 +10,7 @@ data class UserModel(
     val phoneNumber:String,
     val email:String?=null,
     val note:String?="",
-    val feedbackCollected:Boolean?=false,
-    val businessId:String?="",
+    val status: String?="pending",
 ){
     fun toRequest():User{
         return User(
@@ -20,8 +19,7 @@ data class UserModel(
             phoneNumber,
             email,
             note,
-            feedbackCollected,
-            businessId,
+            status
         )
     }
 }

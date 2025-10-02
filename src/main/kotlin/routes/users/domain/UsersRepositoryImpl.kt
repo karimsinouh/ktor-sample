@@ -43,9 +43,14 @@ class UsersRepositoryImpl(
         onFailure: suspend (String) -> Unit
     ) {
         val name=structuredResponseBody.parameters?.client_name?:"Unknown"
-        val email=structuredResponseBody.parameters?.client_email
-        val businessInfo=structuredResponseBody.parameters?.business_information
-        val client=UserModel(null,name,phoneNumber,email,businessInfo)
+        val email=structuredResponseBody.parameters?.client_name
+
+        val client=UserModel(
+            id=null,
+            name = name,
+            phoneNumber = phoneNumber,
+            email = email
+        )
         insert(client,onSuccess,onFailure)
     }
 
@@ -148,8 +153,7 @@ class UsersRepositoryImpl(
                 Updates.set(User::email.name,user?.email),
                 Updates.set(User::note.name,user?.note),
                 Updates.set(User::phoneNumber.name,user?.phoneNumber),
-                Updates.set(User::feedbackCollected.name,user?.feedbackCollected),
-                Updates.set(User::businessId.name,user?.businessId),
+                Updates.set(User::status.name,user?.status),
             )
             val options=UpdateOptions().upsert(true)
 
