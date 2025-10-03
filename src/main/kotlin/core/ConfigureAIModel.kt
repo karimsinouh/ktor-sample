@@ -27,8 +27,8 @@ object ConfigureAIModel {
         val properties= mapOf(
             "client_name" to PropertyField("string","name of client"),
             "age" to PropertyField("string","age of the client"),
-            "pack" to PropertyField("string","pack or plan that the client chose"),
-            "option" to PropertyField("string","whether the client registered himself or his child"),
+            "pack" to PropertyField("string","pack or plan that the client chose [In English]"),
+            "option" to PropertyField("string","whether the client registered himself or his child [In English]"),
         )
 
         @Serializable
@@ -130,6 +130,7 @@ Ask:
 ---
 
 When received:  
+If the client hasn't given his name, ask him about the name again because it's mandatory, then tell him:
 "Thank you [Name]! ✅ Your request for [Pack Name] has been recorded. Our team will contact you shortly to confirm the final details. All your information is private and secure with us."  
 
 ---
