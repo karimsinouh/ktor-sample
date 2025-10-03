@@ -9,9 +9,11 @@ data class User(
     val id:ObjectId,
     val name:String,
     val phoneNumber:String,
-    val email:String?=null,
-    val note:String?="",
     val status: String?="pending",
+    val age:String,
+    val pack: String,
+    val option:String,
+    val time:Long,
 ){
 
     fun toModel():UserModel{
@@ -19,9 +21,11 @@ data class User(
             id.toString(),
             name,
             phoneNumber,
-            email,
-            note,
-            status
+            status,
+            age,
+            pack,
+            option,
+            time,
         )
     }
 

@@ -42,14 +42,23 @@ class UsersRepositoryImpl(
         onSuccess: suspend () -> Unit,
         onFailure: suspend (String) -> Unit
     ) {
+
+        val timestamp=System.currentTimeMillis()
+
         val name=structuredResponseBody.parameters?.client_name?:"Unknown"
-        val email=structuredResponseBody.parameters?.client_name
+        val age=structuredResponseBody.parameters?.age?:"Unspecified"
+        val pack=structuredResponseBody.parameters?.pack?:"Unspecified"
+        val option=structuredResponseBody.parameters?.option?:"Unspecified"
 
         val client=UserModel(
             id=null,
             name = name,
             phoneNumber = phoneNumber,
-            email = email
+            status = "pending",
+            age = age,
+            pack=pack,
+            option=option,
+            time=timestamp
         )
         insert(client,onSuccess,onFailure)
     }
@@ -150,10 +159,9 @@ class UsersRepositoryImpl(
 
             val updates=Updates.combine(
                 Updates.set(User::name.name,user?.name),
-                Updates.set(User::email.name,user?.email),
-                Updates.set(User::note.name,user?.note),
                 Updates.set(User::phoneNumber.name,user?.phoneNumber),
                 Updates.set(User::status.name,user?.status),
+                Updates.set(User::pack.name,user?.pack),
             )
             val options=UpdateOptions().upsert(true)
 

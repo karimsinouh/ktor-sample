@@ -8,18 +8,22 @@ data class UserModel(
     val id:String?=null,
     val name:String,
     val phoneNumber:String,
-    val email:String?=null,
-    val note:String?="",
     val status: String?="pending",
+    val age:String,
+    val pack: String,
+    val option:String,
+    val time:Long,
 ){
     fun toRequest():User{
         return User(
             ObjectId(),
             name,
             phoneNumber,
-            email,
-            note,
-            status
+            status,
+            age,
+            pack,
+            option,
+            time,
         )
     }
 }
