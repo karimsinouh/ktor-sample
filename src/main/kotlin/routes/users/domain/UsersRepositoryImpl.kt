@@ -208,7 +208,8 @@ class UsersRepositoryImpl(
     ){
         try {
 
-            val query=Filters.eq("id",user?.id)
+            val objectId= ObjectId(user?.id)
+            val query=Filters.eq("_id",objectId)
 
             val updates=Updates.combine(
                 Updates.set(User::name.name,user?.name),
