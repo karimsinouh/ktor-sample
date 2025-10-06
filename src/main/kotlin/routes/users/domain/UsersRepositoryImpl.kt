@@ -9,6 +9,7 @@ import com.mongodb.client.model.UpdateOptions
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.flow.*
+import org.bson.types.ObjectId
 
 class UsersRepositoryImpl(
     private val mongoDatabase: MongoDatabase
@@ -116,8 +117,10 @@ class UsersRepositoryImpl(
 
         try {
 
+            val objectId= ObjectId(id)
+
             val result=mongoDatabase.getCollection<User>("users")
-                .find<User>(Filters.eq("_id",id))
+                .find<User>(Filters.eq("_id",objectId))
                 .firstOrNull()
             if (result!=null)
                 onSuccess(result.toModel())
