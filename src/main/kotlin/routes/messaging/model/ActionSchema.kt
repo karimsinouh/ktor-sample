@@ -82,7 +82,8 @@ data class ParametersProperty(
 @Serializable
 data class PropertyField(
     val type: String,
-    val description: String
+    val description: String,
+    val enum:List<String>?=null
 )
 
 @Serializable

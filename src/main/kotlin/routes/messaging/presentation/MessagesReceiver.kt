@@ -101,7 +101,8 @@ fun Routing.messagesReceiver(
             },
             onFailure = {
                 //send a message to the user to let him know that server encountered an error
-                //repo.sendWhatsappMessage(clientPhoneNumber, "We're really sorry. We encountered an unexpected error. Please try again later. Thank you.", {}, ::failureResponse)
+                //
+                // repo.sendWhatsappMessage(clientPhoneNumber, "We're really sorry. We encountered an unexpected error. Please try again later. Thank you.", {}, ::failureResponse)
                 failureResponse(it)
                 println("/MessagesReceiver $it")
             }

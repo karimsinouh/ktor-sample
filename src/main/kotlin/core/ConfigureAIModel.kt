@@ -28,7 +28,7 @@ object ConfigureAIModel {
             "client_name" to PropertyField("string","name of client"),
             "age" to PropertyField("string","age of the client"),
             "pack" to PropertyField("string","pack or plan that the client chose [In English]"),
-            "option" to PropertyField("string","whether the client registered himself or his child [In English]"),
+            "option" to PropertyField("string","whether the client registered himself or his child.", enum = listOf("adult","child")),
         )
 
         @Serializable
