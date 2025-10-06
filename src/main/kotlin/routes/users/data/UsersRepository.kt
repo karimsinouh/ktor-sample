@@ -46,4 +46,5 @@ interface UsersRepository {
         onFailure: suspend (String) -> Unit
     )
 
+    suspend fun deleteById(id: String?, onFailure: suspend (String) -> Unit, onSuccess: suspend () -> Unit)
 }

@@ -70,11 +70,11 @@ fun Routing.usersRouting(repo: UsersRepositoryImpl){
         }
     }
 
-    delete("users/delete/{phoneNumber}"){
+    delete("users/delete/{id}"){
         try {
-            val phoneNumber=call.parameters["phoneNumber"]
-            repo.deleteByPhoneNumber(
-                phoneNumber=phoneNumber,
+            val id=call.parameters["id"]
+            repo.deleteById(
+                id=id,
                 onSuccess = {
                     successResponse("User deleted")
                 },

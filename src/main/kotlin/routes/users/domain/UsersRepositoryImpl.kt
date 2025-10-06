@@ -148,6 +148,31 @@ class UsersRepositoryImpl(
         }
     }
 
+    override suspend fun deleteById(
+        id: String?,
+        onFailure: suspend (String) -> Unit,
+        onSuccess: suspend () -> Unit
+    ){
+        if (id==null){
+            onFailure("Invalid user id")
+            return
+        }
+
+        try {
+
+            val result=mongoDatabase.getCollection<User>("users")
+                .deleteOne(Filters.eq("id",id))
+
+            if (result.deletedCount>0)
+                onSuccess()
+            else
+                onFailure("No user was deleted")
+
+        }catch (e:Exception){
+            onFailure(e.message?:"Failed tor retrieve user")
+        }
+    }
+
     override suspend fun update(
         user: UserModel?,
         onSuccess:suspend  () -> Unit,
