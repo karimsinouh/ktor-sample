@@ -117,7 +117,7 @@ class UsersRepositoryImpl(
         try {
 
             val result=mongoDatabase.getCollection<User>("users")
-                .find<User>(Filters.eq("id",id))
+                .find<User>(Filters.eq("_id",id))
                 .firstOrNull()
             if (result!=null)
                 onSuccess(result.toModel())
