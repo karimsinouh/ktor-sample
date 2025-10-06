@@ -84,7 +84,7 @@ class UsersRepositoryImpl(
                 onFailure("Couldn't find user")
 
         }catch (e:Exception){
-            onFailure(e.message?:"Failed tor retrieve user")
+            onFailure(e.message?:"Failed to retrieve user")
         }
     }
 
@@ -101,6 +101,31 @@ class UsersRepositoryImpl(
 
         }catch (e:Exception){
             null
+        }
+    }
+
+    override suspend fun getUserById(
+        id: String?,
+        onSuccess: suspend (UserModel) -> Unit,
+        onFailure: suspend (String) -> Unit
+    ){
+        if (id==null){
+            onFailure("Invalid phone number")
+            return
+        }
+
+        try {
+
+            val result=mongoDatabase.getCollection<User>("users")
+                .find<User>(Filters.eq("id",id))
+                .firstOrNull()
+            if (result!=null)
+                onSuccess(result.toModel())
+            else
+                onFailure("Couldn't find user")
+
+        }catch (e:Exception){
+            onFailure(e.message?:"Failed tor retrieve user")
         }
     }
 
@@ -180,7 +205,7 @@ class UsersRepositoryImpl(
     ){
         try {
 
-            val query=Filters.eq("phoneNumber",user?.phoneNumber)
+            val query=Filters.eq("id",user?.id)
 
             val updates=Updates.combine(
                 Updates.set(User::name.name,user?.name),

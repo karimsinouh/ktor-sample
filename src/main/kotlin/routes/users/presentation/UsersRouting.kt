@@ -9,11 +9,11 @@ import io.ktor.server.routing.*
 
 fun Routing.usersRouting(repo: UsersRepositoryImpl){
 
-    get("users/get/{phoneNumber}") {
+    get("users/get/{id}") {
         try {
-            val phoneNumber=call.parameters["phoneNumber"]
-            repo.getUserByPhoneNumber(
-                phoneNumber=phoneNumber,
+            val id=call.parameters["id"]
+            repo.getUserById(
+                id=id,
                 onSuccess = {user->
                     successResponse(user)
                 },
@@ -23,6 +23,7 @@ fun Routing.usersRouting(repo: UsersRepositoryImpl){
             failureResponse(e.message?:"")
         }
     }
+
 
     get("users/get")  {
         try {

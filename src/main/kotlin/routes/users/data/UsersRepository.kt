@@ -29,6 +29,12 @@ interface UsersRepository {
         phoneNumber:String,
     ):UserModel?
 
+    suspend fun getUserById(
+        id: String?,
+        onSuccess: suspend (UserModel) -> Unit,
+        onFailure: suspend (String) -> Unit
+    )
+
     suspend fun getAllUsers(
         onSuccess:suspend (List<UserModel>)->Unit,
         onFailure:suspend (String)->Unit
