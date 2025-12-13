@@ -40,6 +40,7 @@ fun Routing.messagesReceiverKoog(
 
         //receive the user message and store it in the database
         val requestBody = call.receive<WhatsAppMessageResponse>()
+        call.respond(HttpStatusCode.OK)
         val message= extractMessageAndSenderKoog(requestBody)
         val clientPhoneNumber = getCorrectPhoneNumberFormat(message.first)
         val text = message.second
