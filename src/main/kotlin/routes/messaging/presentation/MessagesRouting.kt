@@ -6,6 +6,6 @@ import io.ktor.server.routing.*
 
 fun Routing.messagesRouting(chatRepository: ChatRepository,usersRepository: UsersRepository) {
     getMessages(chatRepository.messages)
-    messagesReceiver(chatRepository,usersRepository)
+    messagesReceiverKoog(chatRepository,usersRepository)
     verifyToken()
 }

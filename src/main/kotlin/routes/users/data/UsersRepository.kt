@@ -18,6 +18,14 @@ interface UsersRepository {
         onFailure: suspend (String) -> Unit
     )
 
+    suspend fun insertFromAgentResponse(
+        phoneNumber: String,
+        name:String,
+        age:String,
+        option: String,
+        pack: String,
+    )
+
     suspend fun getUserByPhoneNumber(
         phoneNumber:String?,
         onSuccess:suspend (UserModel)->Unit,
@@ -26,7 +34,7 @@ interface UsersRepository {
 
 
     suspend fun getUserByPhoneNumber(
-        phoneNumber:String,
+        phoneNumber: String?,
     ):UserModel?
 
     suspend fun getUserById(

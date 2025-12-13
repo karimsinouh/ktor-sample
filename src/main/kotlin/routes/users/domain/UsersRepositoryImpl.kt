@@ -11,6 +11,7 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.flow.*
 import org.bson.types.ObjectId
 
+
 class UsersRepositoryImpl(
     private val mongoDatabase: MongoDatabase
 ): UsersRepository {
@@ -64,6 +65,33 @@ class UsersRepositoryImpl(
         insert(client,onSuccess,onFailure)
     }
 
+    override suspend fun insertFromAgentResponse(
+        phoneNumber: String,
+        name:String,
+        age:String,
+        option: String,
+        pack: String,
+    ) {
+
+        val timestamp=System.currentTimeMillis()
+
+        val client=UserModel(
+            id=null,
+            name = name,
+            phoneNumber = phoneNumber,
+            status = "pending",
+            age = age,
+            pack=pack,
+            option=option,
+            time=timestamp
+        )
+        insert(
+            user = client,
+            onSuccess = {},
+            onFailure = {}
+        )
+    }
+
     override suspend fun getUserByPhoneNumber(
         phoneNumber:String?,
         onSuccess:suspend (UserModel)->Unit,
@@ -91,7 +119,7 @@ class UsersRepositoryImpl(
 
 
     override suspend fun getUserByPhoneNumber(
-        phoneNumber:String,
+        phoneNumber: String?,
     ): UserModel?{
         return try {
 

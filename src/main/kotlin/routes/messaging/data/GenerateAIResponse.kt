@@ -1,12 +1,8 @@
 package com.example.routes.messaging.data
 
 import com.example.core.ConfigureAIModel
-import com.example.routes.appointments.model.AppointmentModel
-import com.example.routes.appointments.model.AppointmentsRepository
 import com.example.routes.messaging.model.*
-import com.example.routes.messaging.model.AIMessage.Companion.ROLE_DEVELOPER
 import com.example.routes.users.data.UsersRepository
-import com.example.routes.users.model.User
 import com.example.routes.users.model.UserModel
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -14,7 +10,6 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.json.Json
-import org.bson.types.ObjectId
 
 class GenerateAIResponse(
     private val client:HttpClient,

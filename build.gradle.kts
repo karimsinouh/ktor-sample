@@ -53,4 +53,8 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:3.1.0")
     implementation("io.ktor:ktor-client-content-negotiation:2.3.3") // For ContentNegotiation
 
+    //koog
+    //implementation("ai.koog:koog-agents:0.5.3")
+    implementation("ai.koog:koog-ktor:0.5.4")
+
 }
