@@ -59,47 +59,37 @@ fun Routing.messagesReceiverKoog(
         repo.messages.insert(AIMessage.ROLE_USER,text, clientPhoneNumber)
 
 
-//        // 1. Format History clearly with dividers
-//        val historyText = history.joinToString(separator = "\n") { msg ->
-//            val role = if (msg.sender == AIMessage.ROLE_USER) "User" else "Assistant"
-//            "- $role: ${msg.message}"
-//        }
-//
-//        //format the prompt input properly
-//        val promptInput="""
-//
-//            # CONTEXT
-//            The user's phone number is: ${'$'}clientPhoneNumber
-//
-//            # CONVERSATION HISTORY
-//            $historyText
-//
-//            # CURRENT REQUEST
-//            User: $text
-//
-//        """.trimIndent()
+        // 1. Prepare the Input (Context + Task)
+        // We format the history manually because the Agent needs a single string to "think" about.
+        val context = history.joinToString(separator = "\n") { message ->
+            val role = if (message.sender == AIMessage.ROLE_USER) "User" else "Assistant"
+            "$role: ${message.message}"
+        }
 
-        val aiResponse=aiAgent(
-            model = GoogleModels.Gemini2_0Flash,
+        val agentInput = """
+    # CONTEXT
+    Client Phone: $clientPhoneNumber
+    
+    # HISTORY
+    $context
+    
+    # CURRENT REQUEST
+    User: $text
+    
+""".trimIndent()
+
+        // 2. Execute the Agent
+        val aiResponse = aiAgent(
+            model = GoogleModels.Gemini2_0Flash, // Use 1.5 Flash for speed/cost
             strategy = reActStrategy(),
-            tools = ToolRegistry{
+            tools = ToolRegistry {
                 tools(UsersToolSet(usersRepository))
             }
-        ).run {
-            prompt("chat"){
-                system("this client's phone number is: $clientPhoneNumber")
-                history.forEach { message->
-                    when(message.sender){
-                        AIMessage.ROLE_USER->user(message.message?:"")
-                        AIMessage.ROLE_ASSISTANT->assistant(message.message?:"")
-                    }
-                }
-                user(text)
-            }
-        }.messages.joinToString(separator = " ") { it.content }
+        ).run(agentInput)
 
         println("### AI response ->  $aiResponse ")
 
+        println("\n\nagent input: $agentInput")
 
         //store the AI response in the database
         repo.messages.insert(
