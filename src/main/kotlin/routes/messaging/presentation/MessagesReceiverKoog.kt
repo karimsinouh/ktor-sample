@@ -69,7 +69,7 @@ fun Routing.messagesReceiverKoog(
                 }
                 user(text)
             },
-            model = OpenAIModels.Chat.GPT4o,
+            model = GoogleModels.Gemini2_0Flash,
         ).joinToString(separator = " "){ it.content }
 
         println("-> Ai Replied -> $aiResponse ")

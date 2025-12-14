@@ -29,7 +29,7 @@ fun Application.module() {
     }
     install(Koog){
         llm {
-            google(apiKey = "AIzaSyC63dmTKD8dsf6okQKpKLCnp3GDHv-3rxg")
+            google(apiKey = "AIzaSyBgBrwtSjRoqS8Vsnwn5tzi-H6hyrnp6E0")
             openAI(AI_API_KEY)
         }
         agentConfig {
