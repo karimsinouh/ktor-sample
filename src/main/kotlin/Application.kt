@@ -1,7 +1,9 @@
 package com.example
 
  import ai.koog.agents.core.tools.reflect.tools
+ import ai.koog.agents.ext.agent.reActStrategy
  import ai.koog.ktor.Koog
+ import com.example.core.ConfigureAIModel
  import com.example.core.ConfigureAIModel.AI_API_KEY
  import com.example.di.DIModule
  import com.example.routes.users.domain.UsersToolSet
@@ -32,12 +34,18 @@ fun Application.module() {
             google(apiKey = "AIzaSyBgBrwtSjRoqS8Vsnwn5tzi-H6hyrnp6E0")
             openAI(AI_API_KEY)
         }
+
         agentConfig {
             registerTools {
                 val usersTools=UsersToolSet(dependencyInjectionModule.usersRepository)
                 tools(usersTools)
             }
+
+            this.prompt {
+                system(ConfigureAIModel.TRAINING_MESSAGE)
+            }
         }
+
     }
 
 

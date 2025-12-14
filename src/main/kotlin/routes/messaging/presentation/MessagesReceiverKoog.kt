@@ -1,6 +1,8 @@
 package com.example.routes.messaging.presentation
 
 import ai.koog.agents.core.tools.ToolRegistry
+import ai.koog.agents.core.tools.reflect.tools
+import ai.koog.agents.ext.agent.reActStrategy
 import ai.koog.ktor.aiAgent
 import ai.koog.ktor.llm
 import ai.koog.prompt.dsl.prompt
@@ -24,6 +26,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.io.ObjectInputFilter.Config
+import kotlin.reflect.KType
 
 /**
  * Receives messages from Whatsapp API and.
@@ -46,41 +49,56 @@ fun Routing.messagesReceiverKoog(
         val message= extractMessageAndSenderKoog(requestBody)
         val clientPhoneNumber = getCorrectPhoneNumberFormat(message.first)
         val text = message.second
-        println("-> message received -> $text from $clientPhoneNumber ")
+        println("### message received -> $text from $clientPhoneNumber ")
 
 
         //get the last 10 messages from this conversation from the database
-        val messages=repo.messages.getLastMessages(clientPhoneNumber).reversed()
+        val history=repo.messages.getLastMessages(clientPhoneNumber).reversed()
 
         //store the client message in database
         repo.messages.insert(AIMessage.ROLE_USER,text, clientPhoneNumber)
 
 
-        //configure ai agent
-        val aiResponse=llm().execute(
-            prompt = prompt("chat"){
-                system(ConfigureAIModel.getTrainingMessage(null).content)
-                system("this user's phone number is $clientPhoneNumber")
-                messages.forEach { message->
+//        // 1. Format History clearly with dividers
+//        val historyText = history.joinToString(separator = "\n") { msg ->
+//            val role = if (msg.sender == AIMessage.ROLE_USER) "User" else "Assistant"
+//            "- $role: ${msg.message}"
+//        }
+//
+//        //format the prompt input properly
+//        val promptInput="""
+//
+//            # CONTEXT
+//            The user's phone number is: ${'$'}clientPhoneNumber
+//
+//            # CONVERSATION HISTORY
+//            $historyText
+//
+//            # CURRENT REQUEST
+//            User: $text
+//
+//        """.trimIndent()
+
+        val aiResponse=aiAgent(
+            model = GoogleModels.Gemini2_0Flash,
+            strategy = reActStrategy(),
+            tools = ToolRegistry{
+                tools(UsersToolSet(usersRepository))
+            }
+        ).run {
+            prompt("chat"){
+                system("this client's phone number is: $clientPhoneNumber")
+                history.forEach { message->
                     when(message.sender){
                         AIMessage.ROLE_USER->user(message.message?:"")
                         AIMessage.ROLE_ASSISTANT->assistant(message.message?:"")
                     }
                 }
                 user(text)
-            },
-            model = GoogleModels.Gemini2_0Flash,
-        ).joinToString(separator = " "){ it.content }
+            }
+        }.messages.joinToString(separator = " ") { it.content }
 
-        println("-> Ai Replied -> $aiResponse ")
-        println("\n")
-        println("----------------------------------------------------")
-        println("chat history")
-        messages.forEach {
-            println("${it.sender} : ${it.message}")
-        }
-        println("----------------------------------------------------")
-
+        println("### AI response ->  $aiResponse ")
 
 
         //store the AI response in the database
@@ -90,6 +108,7 @@ fun Routing.messagesReceiverKoog(
             userPhoneNumber = clientPhoneNumber
         )
 
+        //send the AI response back to user via whatsapp
         repo.sendWhatsappMessage(
             phoneNumber = clientPhoneNumber,
             message=aiResponse,
