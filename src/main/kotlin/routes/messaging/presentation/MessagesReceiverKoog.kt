@@ -70,6 +70,9 @@ fun Routing.messagesReceiverKoog(
             model = GoogleModels.Gemini2_0Flash,
         ).joinToString(separator = " "){ it.content }
 
+        println("-> Ai Replied -> $aiResponse ")
+
+
         //store the AI response in the database
         repo.messages.insert(
             sender = AIMessage.ROLE_ASSISTANT,
