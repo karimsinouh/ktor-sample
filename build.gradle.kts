@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
@@ -58,4 +59,8 @@ dependencies {
 
     implementation("com.google.firebase:firebase-admin:9.7.0")
 
+}
+
+tasks.withType<ShadowJar> {
+    mergeServiceFiles()
 }
