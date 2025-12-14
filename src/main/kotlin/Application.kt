@@ -31,16 +31,13 @@ fun Application.module() {
     }
     install(Koog){
         llm {
-            google(apiKey = "AIzaSyBgBrwtSjRoqS8Vsnwn5tzi-H6hyrnp6E0")
+            google(
+                apiKey = "AIzaSyBgBrwtSjRoqS8Vsnwn5tzi-H6hyrnp6E0"
+            )
             openAI(AI_API_KEY)
         }
 
         agentConfig {
-            registerTools {
-                val usersTools=UsersToolSet(dependencyInjectionModule.usersRepository)
-                tools(usersTools)
-            }
-
             this.prompt {
                 system(ConfigureAIModel.TRAINING_MESSAGE)
             }

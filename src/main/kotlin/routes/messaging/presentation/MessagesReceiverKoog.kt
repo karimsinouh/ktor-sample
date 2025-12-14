@@ -67,9 +67,6 @@ fun Routing.messagesReceiverKoog(
         }
 
         val agentInput = """
-    # CONTEXT
-    Client Phone: $clientPhoneNumber
-    
     # HISTORY
     $context
     
@@ -83,8 +80,8 @@ fun Routing.messagesReceiverKoog(
             model = GoogleModels.Gemini2_0Flash, // Use 1.5 Flash for speed/cost
             strategy = reActStrategy(),
             tools = ToolRegistry {
-                tools(UsersToolSet(usersRepository))
-            }
+                tools(UsersToolSet(usersRepository, clientPhoneNumber))
+            },
         ).run(agentInput)
 
         println("### AI response ->  $aiResponse ")

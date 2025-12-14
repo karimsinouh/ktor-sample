@@ -7,22 +7,17 @@ import com.example.routes.users.data.UsersRepository
 import com.example.routes.users.model.UserModel
 
 @LLMDescription("tools needed to retrieve info or register users in database")
-class UsersToolSet(private val repo: UsersRepository): ToolSet {
+class UsersToolSet(private val repo: UsersRepository,private val userPhoneNumber:String,): ToolSet {
 
     @Tool
     @LLMDescription("retrieves user information from database")
-    suspend fun getUserByPhoneNumber(
-        @LLMDescription("the user's phone number")
-        phoneNumber: String?=null,
-    ): UserModel?{
-        return repo.getUserByPhoneNumber(phoneNumber)
+    suspend fun getUserByPhoneNumber(): UserModel?{
+        return repo.getUserByPhoneNumber(userPhoneNumber)
     }
 
     @Tool
     @LLMDescription("register user info in database")
     suspend fun insertUser(
-        @LLMDescription("user's information")
-        phoneNumber: String,
         @LLMDescription("user's full name")
         name:String,
         @LLMDescription("user's age")
@@ -32,7 +27,7 @@ class UsersToolSet(private val repo: UsersRepository): ToolSet {
         @LLMDescription("the pack that the user has chosen")
         pack: String,
     ){
-        repo.insertFromAgentResponse(phoneNumber,name,age,option,pack,{},{})
+        repo.insertFromAgentResponse(userPhoneNumber,name,age,option,pack,{},{})
     }
 
 
