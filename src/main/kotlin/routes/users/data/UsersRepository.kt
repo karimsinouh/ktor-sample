@@ -24,6 +24,8 @@ interface UsersRepository {
         age:String,
         option: String,
         pack: String,
+        onSuccess: suspend () -> Unit,
+        onFailure: suspend (String) -> Unit
     )
 
     suspend fun getUserByPhoneNumber(

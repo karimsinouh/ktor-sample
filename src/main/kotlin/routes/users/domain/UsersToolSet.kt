@@ -27,7 +27,7 @@ class UsersToolSet(private val repo: UsersRepository): ToolSet {
         option: String,
         pack: String,
     ){
-        repo.insertFromAgentResponse(phoneNumber,name,age,option,pack)
+        repo.insertFromAgentResponse(phoneNumber,name,age,option,pack,{},{})
     }
 
 

@@ -1,0 +1,38 @@
+package com.example.routes.messaging.domain
+
+import com.example.routes.messaging.data.MessagesRepository
+import com.example.routes.messaging.model.MessageModel
+import com.google.cloud.firestore.Query
+import com.google.firebase.cloud.FirestoreClient
+import com.google.firebase.internal.FirebaseService
+
+class MessagesRepositoryImpl: MessagesRepository {
+
+
+    private val db = FirestoreClient.getFirestore()
+
+    override suspend fun insert(sender: String, message: String, userPhoneNumber: String) {
+        val messagesCollection = db.collection("users")
+            .document(userPhoneNumber)
+            .collection("messages")
+
+        val messageModel= MessageModel(sender,message,userPhoneNumber, System.currentTimeMillis())
+        messagesCollection.add(messageModel)
+    }
+
+    override suspend fun getLastMessages(userPhoneNumber: String): List<MessageModel> {
+        val messagesCollection = db.collection("users")
+            .document(userPhoneNumber)
+            .collection("messages")
+            .limit(15)
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .get()
+            .get()
+
+        return if (messagesCollection.documents.isNotEmpty()){
+            messagesCollection.toObjects(MessageModel::class.java)
+        }else
+            emptyList()
+
+    }
+}

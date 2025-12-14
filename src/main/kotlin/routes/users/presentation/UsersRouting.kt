@@ -1,13 +1,14 @@
-package com.example.routes.users.presentation
+package routes.users.presentation
 
 import com.example.core.model.failureResponse
 import com.example.core.model.successResponse
+import com.example.routes.users.data.UsersRepository
 import com.example.routes.users.domain.UsersRepositoryImpl
 import com.example.routes.users.model.UserModel
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 
-fun Routing.usersRouting(repo: UsersRepositoryImpl){
+fun Routing.usersRouting(repo: UsersRepository){
 
     get("users/get/{id}") {
         try {
@@ -23,7 +24,6 @@ fun Routing.usersRouting(repo: UsersRepositoryImpl){
             failureResponse(e.message?:"")
         }
     }
-
 
     get("users/get")  {
         try {

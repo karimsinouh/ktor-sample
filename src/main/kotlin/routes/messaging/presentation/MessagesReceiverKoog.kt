@@ -61,8 +61,8 @@ fun Routing.messagesReceiverKoog(
                 system("this user's phone number is $clientPhoneNumber")
                 messages.forEach { message->
                     when(message.sender){
-                        AIMessage.ROLE_USER->user(message.message)
-                        AIMessage.ROLE_ASSISTANT->assistant(message.message)
+                        AIMessage.ROLE_USER->user(message.message?:"")
+                        AIMessage.ROLE_ASSISTANT->assistant(message.message?:"")
                     }
                 }
             },

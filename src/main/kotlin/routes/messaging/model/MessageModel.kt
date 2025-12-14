@@ -5,12 +5,12 @@ import java.util.*
 
 @Serializable
 data class MessageModel(
-    val sender:String,
-    val message:String,
-    val phoneNumber:String,
-    val timestamp:Long,
+    val sender:String?=null,
+    val message:String?=null,
+    val phoneNumber:String?=null,
+    val timestamp:Long?=null,
 ){
     fun toAiMessage():AIMessage{
-        return AIMessage(sender,message)
+        return AIMessage(sender?:"",message?:"")
     }
 }

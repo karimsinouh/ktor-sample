@@ -6,6 +6,7 @@ import com.example.routes.messaging.data.GenerateAIResponse
 import com.example.routes.messaging.data.SendWhatsappMessage
 import com.example.routes.messaging.domain.ChatRepository
 import com.example.routes.messaging.data.MessagesRepository
+import com.example.routes.messaging.domain.MessagesRepositoryImpl
 import com.example.routes.templates.data.SendTemplateMessage
 import com.example.routes.templates.domain.TemplatesRepository
 import com.example.routes.users.domain.UsersRepositoryImpl
@@ -13,6 +14,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import routes.users.domain.UsersRepositoryFirebaseImpl
 
 class DIModule {
 
@@ -36,7 +38,7 @@ class DIModule {
     }
 
     val messagesRepository by lazy {
-        MessagesRepository(mongoDatabase)
+        MessagesRepositoryImpl()
     }
 
     val sendWhatsappMessage by lazy {
@@ -48,7 +50,7 @@ class DIModule {
     }
 
     val usersRepository by lazy {
-        UsersRepositoryImpl(mongoDatabase)
+        UsersRepositoryFirebaseImpl()
     }
 
     val sendTemplateMessage by lazy {

@@ -56,6 +56,6 @@ dependencies {
     //koog
     implementation("ai.koog:koog-ktor:0.5.4")
 
-    implementation("com.google.firebase:firebase-admin:9.2.0")
+    implementation("com.google.firebase:firebase-admin:9.7.0")
 
 }

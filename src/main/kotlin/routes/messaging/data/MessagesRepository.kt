@@ -9,34 +9,16 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.flow.toList
 import org.bson.types.ObjectId
 
-class MessagesRepository(
-    private val mongoDatabase: MongoDatabase,
-) {
-
-
-    private val collection=mongoDatabase.getCollection<MessagesCollection>("messages")
+interface MessagesRepository {
 
     suspend fun insert(
         sender:String,
         message:String,
         userPhoneNumber:String,
-    ){
-        val timestamp=System.currentTimeMillis()
-        val obj=MessagesCollection(sender,message, userPhoneNumber, timestamp)
-        collection.insertOne(obj)
-    }
+    )
 
     suspend fun getLastMessages(
         userPhoneNumber: String,
-    ):List<MessageModel>{
-        val result=collection.find()
-            .filter(Filters.eq("phoneNumber",userPhoneNumber))
-            .sort(descending(MessagesCollection::timestamp.name))
-            .limit(20)
-            .toList()
-            .reversed()
-
-        return result.map { it.toModel() }
-    }
+    ):List<MessageModel>
 
 }
