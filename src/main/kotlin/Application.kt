@@ -2,6 +2,7 @@ package com.example
 
  import ai.koog.agents.core.tools.reflect.tools
  import ai.koog.ktor.Koog
+ import com.example.core.ConfigureAIModel.AI_API_KEY
  import com.example.di.DIModule
  import com.example.routes.users.domain.UsersToolSet
  import di.FirebaseAdmin
@@ -29,6 +30,7 @@ fun Application.module() {
     install(Koog){
         llm {
             google(apiKey = "AIzaSyC63dmTKD8dsf6okQKpKLCnp3GDHv-3rxg")
+            openAI(AI_API_KEY)
         }
         agentConfig {
             registerTools {

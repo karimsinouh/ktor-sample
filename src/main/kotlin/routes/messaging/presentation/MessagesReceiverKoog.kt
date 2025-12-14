@@ -5,6 +5,7 @@ import ai.koog.ktor.aiAgent
 import ai.koog.ktor.llm
 import ai.koog.prompt.dsl.prompt
 import ai.koog.prompt.executor.clients.google.GoogleModels
+import ai.koog.prompt.executor.clients.openai.OpenAIModels
 import com.example.core.ConfigureAIModel
 import com.example.core.Constants
 import com.example.core.model.failureResponse
@@ -41,6 +42,7 @@ fun Routing.messagesReceiverKoog(
         //receive the user message and store it in the database
         val requestBody = call.receive<WhatsAppMessageResponse>()
         call.respond(HttpStatusCode.OK)
+
         val message= extractMessageAndSenderKoog(requestBody)
         val clientPhoneNumber = getCorrectPhoneNumberFormat(message.first)
         val text = message.second
@@ -67,7 +69,7 @@ fun Routing.messagesReceiverKoog(
                 }
                 user(text)
             },
-            model = GoogleModels.Gemini2_0Flash,
+            model = OpenAIModels.Chat.GPT4o,
         ).joinToString(separator = " "){ it.content }
 
         println("-> Ai Replied -> $aiResponse ")
