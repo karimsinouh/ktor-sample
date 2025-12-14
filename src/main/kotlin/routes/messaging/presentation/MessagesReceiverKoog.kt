@@ -72,6 +72,12 @@ fun Routing.messagesReceiverKoog(
             model = GoogleModels.Gemini2_0Flash,
         ).joinToString(separator = " "){ it.content }
 
+        println("chat history")
+        messages.forEach {
+            println("${it.sender} : ${it.message}")
+        }
+        println("\n")
+
         println("-> Ai Replied -> $aiResponse ")
 
 
