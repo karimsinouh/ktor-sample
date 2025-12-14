@@ -47,11 +47,11 @@ fun Routing.messagesReceiverKoog(
         println("-> message received -> $text from $clientPhoneNumber ")
 
 
-        //store the client message in database
-        repo.messages.insert(AIMessage.ROLE_USER,text, clientPhoneNumber)
-
         //get the last 10 messages from this conversation from the database
         val messages=repo.messages.getLastMessages(clientPhoneNumber)
+
+        //store the client message in database
+        repo.messages.insert(AIMessage.ROLE_USER,text, clientPhoneNumber)
 
 
         //configure ai agent
@@ -65,6 +65,7 @@ fun Routing.messagesReceiverKoog(
                         AIMessage.ROLE_ASSISTANT->assistant(message.message?:"")
                     }
                 }
+                user(text)
             },
             model = GoogleModels.Gemini2_0Flash,
         ).joinToString(separator = " "){ it.content }
