@@ -50,7 +50,7 @@ fun Routing.messagesReceiverKoog(
 
 
         //get the last 10 messages from this conversation from the database
-        val messages=repo.messages.getLastMessages(clientPhoneNumber)
+        val messages=repo.messages.getLastMessages(clientPhoneNumber).reversed()
 
         //store the client message in database
         repo.messages.insert(AIMessage.ROLE_USER,text, clientPhoneNumber)
@@ -72,13 +72,15 @@ fun Routing.messagesReceiverKoog(
             model = GoogleModels.Gemini2_0Flash,
         ).joinToString(separator = " "){ it.content }
 
+        println("-> Ai Replied -> $aiResponse ")
+        println("\n")
+        println("----------------------------------------------------")
         println("chat history")
         messages.forEach {
             println("${it.sender} : ${it.message}")
         }
-        println("\n")
+        println("----------------------------------------------------")
 
-        println("-> Ai Replied -> $aiResponse ")
 
 
         //store the AI response in the database
