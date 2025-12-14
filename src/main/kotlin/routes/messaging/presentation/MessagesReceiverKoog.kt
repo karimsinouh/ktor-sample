@@ -2,6 +2,7 @@ package com.example.routes.messaging.presentation
 
 import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.core.tools.reflect.tools
+import ai.koog.agents.ext.agent.chatAgentStrategy
 import ai.koog.agents.ext.agent.reActStrategy
 import ai.koog.ktor.aiAgent
 import ai.koog.ktor.llm
@@ -78,7 +79,7 @@ fun Routing.messagesReceiverKoog(
         // 2. Execute the Agent
         val aiResponse = aiAgent(
             model = GoogleModels.Gemini2_0Flash, // Use 1.5 Flash for speed/cost
-            strategy = reActStrategy(),
+            strategy = chatAgentStrategy(),
             tools = ToolRegistry {
                 tools(UsersToolSet(usersRepository, clientPhoneNumber))
             },
