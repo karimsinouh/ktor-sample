@@ -1,30 +1,15 @@
 package com.example.routes.appointments.model
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Sorts
-import com.mongodb.client.model.Updates
-import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 import kotlinx.datetime.*
 
-class AppointmentsRepository(
-    private val mongoDatabase: MongoDatabase
-) {
-
-    private val collection=mongoDatabase.getCollection<AppointmentsCollection>("appointments")
+class AppointmentsRepository() {
 
     suspend fun getAll(
         onSuccess: suspend (List<AppointmentModel>)->Unit,
         onFailure: suspend (String)->Unit
     ){
         try {
-            val result=collection.find()
-                .sort(Sorts.descending(AppointmentsCollection::id.name))
-                .limit(20)
 
-            val appointments=result.map { it.toModel() }.toList()
-            onSuccess(appointments)
         }catch (e:Exception){
             onFailure(e.message?:"failed to retrieve appointments from database")
         }
@@ -37,13 +22,6 @@ class AppointmentsRepository(
     ){
         try {
 
-            val result=collection.find()
-                .filter(Filters.eq("status",status))
-                .sort(Sorts.descending(AppointmentsCollection::id.name))
-                .limit(20)
-
-            val appointments=result.map { it.toModel() }.toList()
-            onSuccess(appointments)
 
         }catch (e:Exception){
             onFailure(e.message?:"failed to retrieve appointments from database")
@@ -59,13 +37,6 @@ class AppointmentsRepository(
 
         try {
 
-            val result=collection.find()
-                .filter(Filters.eq("phoneNumber",phoneNumber))
-                .sort(Sorts.descending(AppointmentsCollection::id.name))
-                .limit(20)
-
-            val appointments=result.map { it.toModel() }.toList()
-            onSuccess(appointments)
 
         }catch (e:Exception){
             onFailure(e.message?:"failed to retrieve appointments from database")
@@ -79,11 +50,6 @@ class AppointmentsRepository(
     ){
         try {
 
-            val result=collection.insertOne(appointmentModel.toCollection())
-            if (result.insertedId!=null)
-                onSuccess()
-            else
-                onFailure("Couldn't insert appointment into database")
 
         }catch (e:Exception){
             onFailure(e.message?:"Failed to insert appointment to database")
@@ -97,24 +63,6 @@ class AppointmentsRepository(
     ){
         try {
 
-            val filter=Filters.eq("id",appointmentModel.id)
-
-            val updates=Updates.combine(
-                Updates.set(AppointmentsCollection::clientName.name,appointmentModel.clientName),
-                Updates.set(AppointmentsCollection::phoneNumber.name,appointmentModel.phoneNumber),
-                Updates.set(AppointmentsCollection::note.name,appointmentModel.note),
-                Updates.set(AppointmentsCollection::date.name,appointmentModel.date),
-                Updates.set(AppointmentsCollection::time.name,appointmentModel.time),
-                Updates.set(AppointmentsCollection::status.name,appointmentModel.status),
-            )
-
-            val result=collection.updateOne(filter,updates)
-
-            if (result.modifiedCount>0)
-                onSuccess()
-            else
-                onFailure("Could not update this appointment")
-
         }catch (e:Exception){
             onFailure(e.message?:"Failed to update appointment")
         }
@@ -126,10 +74,7 @@ class AppointmentsRepository(
         onFailure: suspend (String)->Unit
     ){
         try {
-            val result=collection.deleteOne(Filters.eq("id",appointmentId))
-            if (result.deletedCount>0)
-                onSuccess()
-            onFailure("Failed to delete appointment")
+
         }catch (e:Exception){
             onFailure(e.message?:"Failed to delete appointment")
         }

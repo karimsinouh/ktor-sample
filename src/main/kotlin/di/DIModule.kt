@@ -1,6 +1,5 @@
 package com.example.di
 
-import com.example.core.data.getMongoDatabase
 import com.example.routes.appointments.model.AppointmentsRepository
 import com.example.routes.messaging.data.GenerateAIResponse
 import com.example.routes.messaging.data.SendWhatsappMessage
@@ -9,7 +8,6 @@ import com.example.routes.messaging.data.MessagesRepository
 import com.example.routes.messaging.domain.MessagesRepositoryImpl
 import com.example.routes.templates.data.SendTemplateMessage
 import com.example.routes.templates.domain.TemplatesRepository
-import com.example.routes.users.domain.UsersRepositoryImpl
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.serialization.kotlinx.json.*
@@ -26,10 +24,6 @@ class DIModule {
                 }
             )
         }
-    }
-
-    val mongoDatabase by lazy {
-        getMongoDatabase()
     }
 
 
@@ -62,7 +56,7 @@ class DIModule {
     }
 
     val appointmentsRepository by lazy {
-        AppointmentsRepository(mongoDatabase)
+        AppointmentsRepository()
     }
 
 }

@@ -3,7 +3,6 @@ package routes.users.presentation
 import com.example.core.model.failureResponse
 import com.example.core.model.successResponse
 import com.example.routes.users.data.UsersRepository
-import com.example.routes.users.domain.UsersRepositoryImpl
 import com.example.routes.users.model.UserModel
 import io.ktor.server.request.*
 import io.ktor.server.routing.*

@@ -44,11 +44,6 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.59.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.59.0")
 
-
-    //MongoDB
-    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1")
-
-
     //http client
     implementation("io.ktor:ktor-client-core:3.1.0")
     implementation("io.ktor:ktor-client-cio:3.1.0")
