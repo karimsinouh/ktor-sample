@@ -1,7 +1,6 @@
 package com.example
 
 import ai.koog.agents.core.tools.reflect.tools
-import ai.koog.ktor.Koog
 import com.example.routes.messaging.presentation.messagesRouting
 import com.example.di.DIModule
 import com.example.routes.appointments.presentation.appointmentsRouting

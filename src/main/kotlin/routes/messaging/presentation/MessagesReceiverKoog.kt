@@ -1,33 +1,19 @@
 package com.example.routes.messaging.presentation
 
-import ai.koog.agents.core.tools.ToolRegistry
-import ai.koog.agents.core.tools.reflect.tools
-import ai.koog.agents.ext.agent.chatAgentStrategy
-import ai.koog.agents.ext.agent.reActStrategy
-import ai.koog.ktor.aiAgent
-import ai.koog.ktor.llm
-import ai.koog.prompt.dsl.prompt
-import ai.koog.prompt.executor.clients.google.GoogleModels
-import ai.koog.prompt.executor.clients.openai.OpenAIModels
-import com.example.core.ConfigureAIModel
+import com.example.core.AgentCore
 import com.example.core.Constants
 import com.example.core.model.failureResponse
 import com.example.core.model.getCorrectPhoneNumberFormat
 import com.example.core.model.successResponse
 import com.example.routes.messaging.model.AIMessage
 import com.example.routes.messaging.domain.ChatRepository
-import com.example.routes.messaging.model.StructuredResponseBody
 import com.example.routes.messaging.model.WhatsAppMessageResponse
 import com.example.routes.users.data.UsersRepository
-import com.example.routes.users.domain.UsersToolSet
-import com.example.routes.users.model.User
-import com.example.routes.users.model.UserModel
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import java.io.ObjectInputFilter.Config
-import kotlin.reflect.KType
+
 
 /**
  * Receives messages from Whatsapp API and.
@@ -50,7 +36,6 @@ fun Routing.messagesReceiverKoog(
         val message= extractMessageAndSenderKoog(requestBody)
         val clientPhoneNumber = getCorrectPhoneNumberFormat(message.first)
         val text = message.second
-        println("### message received -> $text from $clientPhoneNumber ")
 
 
         //get the last 10 messages from this conversation from the database
@@ -60,34 +45,10 @@ fun Routing.messagesReceiverKoog(
         repo.messages.insert(AIMessage.ROLE_USER,text, clientPhoneNumber)
 
 
-        // 1. Prepare the Input (Context + Task)
-        // We format the history manually because the Agent needs a single string to "think" about.
-        val context = history.joinToString(separator = "\n") { message ->
-            val role = if (message.sender == AIMessage.ROLE_USER) "User" else "Assistant"
-            "$role: ${message.message}"
-        }
+        //instantiate agent
+        val agent= AgentCore(usersRepository,clientPhoneNumber)
 
-        val agentInput = """
-    # HISTORY
-    $context
-    
-    # CURRENT REQUEST
-    User: $text
-    
-""".trimIndent()
-
-        // 2. Execute the Agent
-        val aiResponse = aiAgent(
-            model = GoogleModels.Gemini2_0Flash, // Use 1.5 Flash for speed/cost
-            strategy = chatAgentStrategy(),
-            tools = ToolRegistry {
-                tools(UsersToolSet(usersRepository, clientPhoneNumber))
-            },
-        ).run(agentInput)
-
-        println("### AI response ->  $aiResponse ")
-
-        println("\n\nagent input: $agentInput")
+        val aiResponse=agent.run(history,text)
 
         //store the AI response in the database
         repo.messages.insert(

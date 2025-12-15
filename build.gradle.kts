@@ -55,7 +55,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:2.3.3") // For ContentNegotiation
 
     //koog
-    implementation("ai.koog:koog-ktor:0.5.4")
+    implementation("ai.koog:koog-agents:0.5.4")
 
     implementation("com.google.firebase:firebase-admin:9.7.0")
 
