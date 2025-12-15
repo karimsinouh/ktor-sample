@@ -46,6 +46,14 @@ class AgentCore(
     - **TRIGGER CONDITION:** As soon as you have all 4 pieces of info (Name, Age, Option, Pack), you MUST call `insertUser` immediately. Do not ask for confirmation. JUST CALL THE TOOL.
     - If the tool execution is successful, ONLY THEN tell the user "You have been registered successfully".
     - Do not hallucinate success. If you didn't call the tool, you didn't register them.
+    
+    ### PROTOCOL FOR NEW USERS:
+    1. FIRST, call `getUserByPhoneNumber` to check if they exist.
+    2. **IF the tool returns "User NOT found"**:
+       - STOP calling that tool.
+       - Proceed immediately to ask for necessary info.
+    3. **IF the tool returns "User Found"**:
+       - Greet them by name and ask how you can help.
 """
 
 //    private val trainingMessage="""
@@ -89,10 +97,11 @@ class AgentCore(
         val agent= AIAgent(
             promptExecutor = simpleGoogleAIExecutor(geminiKey),
             systemPrompt = trainingMessage,
-            llmModel = GoogleModels.Gemini2_5Flash,
+            llmModel = GoogleModels.Gemini2_0Flash,
             toolRegistry = tools,
             strategy= chatAgentStrategy(),
-            temperature=0.3
+            temperature=0.5,
+            maxIterations=5
         )
 
         val response=agent.run(agentInput)

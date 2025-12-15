@@ -15,9 +15,17 @@ class UsersToolSet(
 
     @Tool
     @LLMDescription("retrieves user information from database")
-    suspend fun getUserByPhoneNumber(): UserModel? {
+    suspend fun getUserByPhoneNumber(): String {
         println("DEBUG: Tool 'getUserByPhoneNumber' called for $userPhoneNumber")
-        return repo.getUserByPhoneNumber(userPhoneNumber)
+        val user = repo.getUserByPhoneNumber(userPhoneNumber)
+
+        return if (user != null) {
+            // Found! Return the data so the Agent knows it succeeded
+            "User Found: Name=${user.name}, Age=${user.age}, Status=${user.status}, Pack=${user.pack}, option=${user.option}"
+        } else {
+            // Not Found! Return a CLEAR instruction to stop looking
+            "User NOT found in database. You may proceed."
+        }
     }
 
     @Tool
