@@ -1,7 +1,7 @@
 package com.example
 
  import com.example.di.DIModule
- import di.FirebaseAdmin
+ import com.example.core.FirebaseAdmin
  import io.ktor.serialization.kotlinx.json.json
  import io.ktor.server.application.*
  import io.ktor.server.plugins.contentnegotiation.ContentNegotiation

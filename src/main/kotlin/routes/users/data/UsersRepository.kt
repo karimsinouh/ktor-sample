@@ -1,19 +1,11 @@
 package com.example.routes.users.data
 
-import com.example.routes.messaging.model.StructuredResponseBody
 import com.example.routes.users.model.UserModel
 
 interface UsersRepository {
 
     suspend fun insert(
         user: UserModel?,
-        onSuccess: suspend () -> Unit,
-        onFailure: suspend (String) -> Unit
-    )
-
-    suspend fun insertFromAIResponse(
-        phoneNumber:String,
-        structuredResponseBody: StructuredResponseBody,
         onSuccess: suspend () -> Unit,
         onFailure: suspend (String) -> Unit
     )

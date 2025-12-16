@@ -1,6 +1,5 @@
 package routes.users.domain
 
-import com.example.routes.messaging.model.StructuredResponseBody
 import com.example.routes.users.data.UsersRepository
 import com.example.routes.users.model.UserModel
 import com.google.firebase.cloud.FirestoreClient
@@ -34,26 +33,6 @@ class UsersRepositoryFirebaseImpl : UsersRepository {
         }
     }
 
-    override suspend fun insertFromAIResponse(
-        phoneNumber: String,
-        structuredResponseBody: StructuredResponseBody,
-        onSuccess: suspend () -> Unit,
-        onFailure: suspend (String) -> Unit
-    ) {
-        // Assuming StructuredResponseBody has similar fields.
-        // Map them to your UserModel here.
-        val user = UserModel(
-            id = "", // Will be generated in insert()
-            name = "AI User", // Replace with structuredResponseBody.name if available
-            phoneNumber = phoneNumber,
-            status = "pending",
-            age = "0", // Replace with structuredResponseBody.age
-            pack = "default", // Replace with structuredResponseBody.pack
-            option = "default", // Replace with structuredResponseBody.option
-            time = System.currentTimeMillis()
-        )
-        insert(user, onSuccess, onFailure)
-    }
 
     override suspend fun insertFromAgentResponse(
         phoneNumber: String,

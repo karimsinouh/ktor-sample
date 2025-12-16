@@ -9,8 +9,4 @@ data class MessageModel(
     val message:String?=null,
     val phoneNumber:String?=null,
     val timestamp:Long?=null,
-){
-    fun toAiMessage():AIMessage{
-        return AIMessage(sender?:"",message?:"")
-    }
-}
+)

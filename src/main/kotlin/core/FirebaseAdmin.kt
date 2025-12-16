@@ -1,19 +1,18 @@
-package di
+package com.example.core
 
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
-import java.io.InputStream
 
 object FirebaseAdmin {
-    private val serviceAccount: InputStream? = 
-        this::class.java.classLoader.getResourceAsStream("serviceAccountKey.json")
 
     fun init() {
-        val options = FirebaseOptions.builder()
-            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-            .build()
+        val serviceAccountJson = Env.FIREBASE_SERVICE_ACCOUNT_JSON
+            ?: throw IllegalStateException("FIREBASE_SERVICE_ACCOUNT_JSON not set")
 
+        val options = FirebaseOptions.builder()
+            .setCredentials(GoogleCredentials.fromStream(serviceAccountJson.byteInputStream()))
+            .build()
         FirebaseApp.initializeApp(options)
     }
 }

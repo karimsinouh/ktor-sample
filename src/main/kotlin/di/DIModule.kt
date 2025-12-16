@@ -1,7 +1,5 @@
 package com.example.di
 
-import com.example.routes.appointments.model.AppointmentsRepository
-import com.example.routes.messaging.data.GenerateAIResponse
 import com.example.routes.messaging.data.SendWhatsappMessage
 import com.example.routes.messaging.domain.ChatRepository
 import com.example.routes.messaging.data.MessagesRepository
@@ -26,11 +24,6 @@ class DIModule {
         }
     }
 
-
-    val generateAIResponse by lazy {
-        GenerateAIResponse(client,usersRepository)
-    }
-
     val messagesRepository by lazy {
         MessagesRepositoryImpl()
     }
@@ -40,7 +33,7 @@ class DIModule {
     }
 
     val chatRepository by lazy {
-        ChatRepository(messagesRepository,generateAIResponse,sendWhatsappMessage)
+        ChatRepository(messagesRepository,sendWhatsappMessage)
     }
 
     val usersRepository by lazy {
@@ -53,10 +46,6 @@ class DIModule {
 
     val templatesRepository by lazy {
         TemplatesRepository(sendTemplateMessage)
-    }
-
-    val appointmentsRepository by lazy {
-        AppointmentsRepository()
     }
 
 }

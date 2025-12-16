@@ -9,5 +9,7 @@ object Env {
     val GEMINI_KEY=System.getenv("GEMINI_KEY")
     val TRAINING_MESSAGE=System.getenv("TRAINING_MESSAGE")
 
+    val FIREBASE_SERVICE_ACCOUNT_JSON=System.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
+
 
 }

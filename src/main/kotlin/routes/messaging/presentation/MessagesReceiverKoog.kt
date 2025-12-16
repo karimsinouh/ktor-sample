@@ -5,7 +5,6 @@ import com.example.core.Env
 import com.example.core.model.failureResponse
 import com.example.core.model.getCorrectPhoneNumberFormat
 import com.example.core.model.successResponse
-import com.example.routes.messaging.model.AIMessage
 import com.example.routes.messaging.domain.ChatRepository
 import com.example.routes.messaging.model.WhatsAppMessageResponse
 import com.example.routes.users.data.UsersRepository
@@ -42,7 +41,7 @@ fun Routing.messagesReceiverKoog(
         val history=repo.messages.getLastMessages(clientPhoneNumber).reversed()
 
         //store the client message in database
-        repo.messages.insert(AIMessage.ROLE_USER,text, clientPhoneNumber)
+        repo.messages.insert("user",text, clientPhoneNumber)
 
 
         //instantiate agent
@@ -52,7 +51,7 @@ fun Routing.messagesReceiverKoog(
 
         //store the AI response in the database
         repo.messages.insert(
-            sender = AIMessage.ROLE_ASSISTANT,
+            sender = "assistant",
             message = aiResponse,
             userPhoneNumber = clientPhoneNumber
         )

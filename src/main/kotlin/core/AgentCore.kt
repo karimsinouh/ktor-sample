@@ -7,7 +7,6 @@ import ai.koog.agents.ext.agent.chatAgentStrategy
 import ai.koog.prompt.executor.clients.google.GoogleModels
 import ai.koog.prompt.executor.llms.all.simpleGoogleAIExecutor
 import ai.koog.prompt.executor.llms.all.simpleOpenAIExecutor
-import com.example.routes.messaging.model.AIMessage
 import com.example.routes.messaging.model.MessageModel
 import com.example.routes.users.data.UsersRepository
 import com.example.routes.users.domain.UsersToolSet
@@ -31,8 +30,7 @@ class AgentCore(
         // 1. Prepare the Input (Context + Task)
         // We format the history manually because the Agent needs a single string to "think" about.
         val context = history.joinToString(separator = "\n") { message ->
-            val role = if (message.sender == AIMessage.ROLE_USER) "User" else "Assistant"
-            "$role: ${message.message}"
+            "${message.sender}: ${message.message}"
         }
 
         val agentInput = """

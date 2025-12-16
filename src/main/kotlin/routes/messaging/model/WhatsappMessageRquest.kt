@@ -1,6 +1,5 @@
 package com.example.routes.messaging.model
 
-import com.example.routes.messaging.data.GenerateAIResponse
 import kotlinx.serialization.Serializable
 
 /**
