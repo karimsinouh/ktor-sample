@@ -7,29 +7,29 @@ import com.example.routes.users.data.UsersRepository
 import com.example.routes.users.model.UserModel
 import kotlinx.coroutines.CompletableDeferred
 
-@LLMDescription("tools needed to retrieve info or register users in database")
+@LLMDescription("tools needed to register users in database")
 class UsersToolSet(
     private val repo: UsersRepository,
     private val userPhoneNumber: String
 ) : ToolSet {
 
-    @Tool
-    @LLMDescription("retrieves user information from database")
-    suspend fun getUserByPhoneNumber(): String {
-        println("DEBUG: Tool 'getUserByPhoneNumber' called for $userPhoneNumber")
-        val user = repo.getUserByPhoneNumber(userPhoneNumber)
+//    @Tool
+//    @LLMDescription("retrieves user information from database")
+//    suspend fun getUserByPhoneNumber(): String {
+//        println("DEBUG: Tool 'getUserByPhoneNumber' called for $userPhoneNumber")
+//        val user = repo.getUserByPhoneNumber(userPhoneNumber)
+//
+//        return if (user != null) {
+//            // Found! Return the data so the Agent knows it succeeded
+//            "User Found: Name=${user.name}, Age=${user.age}, Status=${user.status}, Pack=${user.pack}, option=${user.option}"
+//        } else {
+//            // Not Found! Return a CLEAR instruction to stop looking
+//            "User NOT found in database. You may proceed."
+//        }
+//    }
 
-        return if (user != null) {
-            // Found! Return the data so the Agent knows it succeeded
-            "User Found: Name=${user.name}, Age=${user.age}, Status=${user.status}, Pack=${user.pack}, option=${user.option}"
-        } else {
-            // Not Found! Return a CLEAR instruction to stop looking
-            "User NOT found in database. You may proceed."
-        }
-    }
-
     @Tool
-    @LLMDescription("register user info in database")
+    @LLMDescription("register user info in database only if all 4 info are available (name, age, option,pack)")
     suspend fun insertUser(
         @LLMDescription("user's full name") name: String,
         @LLMDescription("user's age") age: String,

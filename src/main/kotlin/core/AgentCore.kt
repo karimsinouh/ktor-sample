@@ -25,13 +25,8 @@ class AgentCore(
     }
 
     private val trainingMessage = """  
-You are the Fezari Chess Academy WhatsApp bot. 
+You are the Fezari Chess Academy WhatsApp bot.
 LANGUAGE: Reply in Modern Standard Arabic (MSA) if user speaks Darija/Arabic.
-
-### CORE LOGIC (Follow Sequentially):
-1. **Check Existence:** Call `getUserByPhoneNumber` exactly ONCE.
-   - IF Found: Greet by name. Stop.
-   - IF Not Found: Start Registration.
 
 2. **Registration Flow (Collect Missing Info):**
    - **Type:** "Self" or "Child"?
@@ -88,10 +83,9 @@ LANGUAGE: Reply in Modern Standard Arabic (MSA) if user speaks Darija/Arabic.
         val agent= AIAgent(
             promptExecutor = simpleGoogleAIExecutor(geminiKey),
             systemPrompt = trainingMessage,
-            llmModel = GoogleModels.Gemini2_0FlashLite,
+            llmModel = GoogleModels.Gemini2_0Flash,
             toolRegistry = tools,
             strategy= chatAgentStrategy(),
-            temperature=0.5,
         )
 
         val response=agent.run(agentInput)
