@@ -41,7 +41,7 @@ object ConfigureAIModel {
 
     }
 
-    const val AI_API_KEY="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"
+    const val AI_API_KEY=""
     const val AI_MODEL="gpt-4o-mini"
 
 

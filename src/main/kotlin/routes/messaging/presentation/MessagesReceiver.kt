@@ -1,7 +1,7 @@
 package com.example.routes.messaging.presentation
 
 import com.example.core.ConfigureAIModel
-import com.example.core.Constants
+import com.example.core.Env
 import com.example.core.model.failureResponse
 import com.example.core.model.getCorrectPhoneNumberFormat
 import com.example.core.model.successResponse
@@ -9,12 +9,10 @@ import com.example.routes.messaging.model.AIMessage
 import com.example.routes.messaging.domain.ChatRepository
 import com.example.routes.messaging.model.WhatsAppMessageResponse
 import com.example.routes.users.data.UsersRepository
-import com.example.routes.users.model.UserModel
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import java.io.ObjectInputFilter.Config
 
 /**
  * Receives messages from Whatsapp API and.
@@ -136,7 +134,7 @@ fun Routing.verifyToken()=get("/messages/messagesReceiver") {
     val challenge=call.request.queryParameters["hub.challenge"]
     val receivedVerificationToken=call.request.queryParameters["hub.verify_token"]
 
-    if (receivedVerificationToken==Constants.WHATSAPP_VERIFICATION_TOKEN){
+    if (receivedVerificationToken==Env.WHATSAPP_VERIFICATION_TOKEN){
         call.respondText(challenge?:"",ContentType.Text.Plain)
         println("Success. token verification: $receivedVerificationToken, challenge: $challenge")
     }else{

@@ -1,7 +1,7 @@
 package com.example.routes.messaging.presentation
 
 import com.example.core.AgentCore
-import com.example.core.Constants
+import com.example.core.Env
 import com.example.core.model.failureResponse
 import com.example.core.model.getCorrectPhoneNumberFormat
 import com.example.core.model.successResponse
@@ -94,7 +94,7 @@ fun Routing.verifyTokenKoog()=get("/messages/messagesReceiver") {
     val challenge=call.request.queryParameters["hub.challenge"]
     val receivedVerificationToken=call.request.queryParameters["hub.verify_token"]
 
-    if (receivedVerificationToken==Constants.WHATSAPP_VERIFICATION_TOKEN){
+    if (receivedVerificationToken==Env.WHATSAPP_VERIFICATION_TOKEN){
         call.respondText(challenge?:"",ContentType.Text.Plain)
         println("Success. token verification: $receivedVerificationToken, challenge: $challenge")
     }else{

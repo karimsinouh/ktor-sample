@@ -1,6 +1,6 @@
 package com.example.routes.messaging.data
 
-import com.example.core.Constants
+import com.example.core.Env
 import com.example.routes.messaging.model.Text
 import com.example.routes.messaging.model.WhatsAppMessageRequest
 import com.example.routes.messaging.model.WhatsappResponseBody
@@ -8,7 +8,6 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kotlinx.serialization.Serializable
 
 class SendWhatsappMessage(
     private val client:HttpClient
@@ -21,13 +20,13 @@ class SendWhatsappMessage(
         onFailure:suspend (String)->Unit
     ){
 
-        val url="https://graph.facebook.com/v22.0/${Constants.WHATSAPP_PHONE_NUMBER_ID}/messages"
+        val url="https://graph.facebook.com/v22.0/${Env.WHATSAPP_PHONE_NUMBER_ID}/messages"
         try {
 
             val response=client.post(url) {
                 headers {
                     append(HttpHeaders.ContentType,"application/json")
-                    append(HttpHeaders.Authorization,"Bearer ${Constants.WHATSAPP_ACCESS_TOKEN}")
+                    append(HttpHeaders.Authorization,"Bearer ${Env.WHATSAPP_ACCESS_TOKEN}")
                 }
                 val requestBody= WhatsAppMessageRequest(
                     messaging_product = "whatsapp",
