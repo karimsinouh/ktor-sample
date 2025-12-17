@@ -10,32 +10,11 @@ interface UsersRepository {
         onFailure: suspend (String) -> Unit
     )
 
-    suspend fun insertFromAgentResponse(
-        phoneNumber: String,
-        name:String,
-        age:String,
-        option: String,
-        pack: String,
-        onSuccess: suspend () -> Unit,
-        onFailure: suspend (String) -> Unit
-    )
-
-    suspend fun getUserByPhoneNumber(
-        phoneNumber:String?,
-        onSuccess:suspend (UserModel)->Unit,
-        onFailure:suspend (String)->Unit
-    )
-
 
     suspend fun getUserByPhoneNumber(
         phoneNumber: String?,
     ):UserModel?
 
-    suspend fun getUserById(
-        id: String?,
-        onSuccess: suspend (UserModel) -> Unit,
-        onFailure: suspend (String) -> Unit
-    )
 
     suspend fun getAllUsers(
         onSuccess:suspend (List<UserModel>)->Unit,

@@ -13,21 +13,6 @@ class UsersToolSet(
     private val userPhoneNumber: String
 ) : ToolSet {
 
-//    @Tool
-//    @LLMDescription("retrieves user information from database")
-//    suspend fun getUserByPhoneNumber(): String {
-//        println("DEBUG: Tool 'getUserByPhoneNumber' called for $userPhoneNumber")
-//        val user = repo.getUserByPhoneNumber(userPhoneNumber)
-//
-//        return if (user != null) {
-//            // Found! Return the data so the Agent knows it succeeded
-//            "User Found: Name=${user.name}, Age=${user.age}, Status=${user.status}, Pack=${user.pack}, option=${user.option}"
-//        } else {
-//            // Not Found! Return a CLEAR instruction to stop looking
-//            "User NOT found in database. You may proceed."
-//        }
-//    }
-
     @Tool
     @LLMDescription("register user info in database only if all 4 info are available (name, age, option,pack)")
     suspend fun insertUser(
@@ -41,12 +26,18 @@ class UsersToolSet(
         // We use a Deferred to wait for the callback result inside this suspend function
         val deferredResult = CompletableDeferred<String>()
 
-        repo.insertFromAgentResponse(
+        val user= UserModel(
             phoneNumber = userPhoneNumber,
             name = name,
             age = age,
             option = option,
             pack = pack,
+            status = "pending",
+            time = System.currentTimeMillis()
+        )
+
+        repo.insert(
+            user=user,
             onSuccess = {
                 println("DEBUG: DB Write Success")
                 deferredResult.complete("User registered successfully.")

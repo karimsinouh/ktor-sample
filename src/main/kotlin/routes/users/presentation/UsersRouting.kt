@@ -12,13 +12,13 @@ fun Routing.usersRouting(repo: UsersRepository){
     get("users/get/{id}") {
         try {
             val id=call.parameters["id"]
-            repo.getUserById(
-                id=id,
-                onSuccess = {user->
-                    successResponse(user)
-                },
-                onFailure = ::failureResponse
-            )
+            val user=repo.getUserByPhoneNumber(id)
+
+            if (user==null)
+                failureResponse("User not found")
+            else
+                successResponse(user)
+
         }catch (e:Exception){
             failureResponse(e.message?:"")
         }

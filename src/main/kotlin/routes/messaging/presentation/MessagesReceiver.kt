@@ -20,7 +20,7 @@ import io.ktor.server.routing.*
  * Stores Messages from both the user and AI in the database.
  * Sends a message back to routes.users via Whatsapp API.
  * */
-fun Routing.messagesReceiverKoog(
+fun Routing.messagesReceiver(
     repo: ChatRepository,
     usersRepository: UsersRepository,
 )=post("/messages/messagesReceiver") {
@@ -73,19 +73,14 @@ fun Routing.messagesReceiverKoog(
 }
 
 fun extractMessageAndSenderKoog(response: WhatsAppMessageResponse): Pair<String, String> {
-    // Traverse the nested structure
-    for (entry in response.entry) {
-        for (change in entry.changes) {
-            if (change.field == "messages") {
-                for (message in change.value.messages) {
-                    val sender = message.from
-                    val messageBody = message.text.body
-                    return Pair(sender, messageBody)
-                }
-            }
-        }
-    }
-    throw IllegalStateException("No message or sender found")
+    val message = response.entry
+        .flatMap { it.changes }
+        .map { it.value.messages }
+        .firstOrNull { it.isNotEmpty() }
+        ?.firstOrNull()
+        ?: throw IllegalStateException("No valid message found in webhook payload")
+
+    return message.from to message.text.body
 }
 
 fun Routing.verifyTokenKoog()=get("/messages/messagesReceiver") {

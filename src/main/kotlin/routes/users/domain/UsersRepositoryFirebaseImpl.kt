@@ -34,99 +34,22 @@ class UsersRepositoryFirebaseImpl : UsersRepository {
     }
 
 
-    override suspend fun insertFromAgentResponse(
-        phoneNumber: String,
-        name: String,
-        age: String,
-        option: String,
-        pack: String,
-        onSuccess: suspend () -> Unit,
-        onFailure: suspend (String) -> Unit
-    ) {
-        val timeStamp = System.currentTimeMillis()
-        val user = UserModel(
-            id = "",
-            name = name,
-            phoneNumber = phoneNumber,
-            status = "pending",
-            age = age,
-            pack = pack,
-            option = option,
-            time = timeStamp
-        )
-        insert(user, onSuccess, onFailure)
-    }
-
-    override suspend fun getUserByPhoneNumber(
-        phoneNumber: String?,
-        onSuccess: suspend (UserModel) -> Unit,
-        onFailure: suspend (String) -> Unit
-    ) = withContext(Dispatchers.IO) {
-        if (phoneNumber == null) {
-            onFailure("Phone number is null")
-            return@withContext
-        }
-
-        try {
-            val querySnapshot = usersCollection
-                .whereEqualTo("phoneNumber", phoneNumber)
-                .get().get()
-
-
-            if (querySnapshot.documents.isNotEmpty()) {
-                // Convert the first matching document to UserModel
-                val user = querySnapshot.documents[0].toObject(UserModel::class.java)
-                onSuccess(user)
-            } else {
-                onFailure("User not found")
-            }
-        } catch (e: Exception) {
-            onFailure(e.message ?: "Error fetching user")
-        }
-    }
 
     override suspend fun getUserByPhoneNumber(phoneNumber: String?): UserModel? = withContext(Dispatchers.IO) {
         if (phoneNumber == null) return@withContext null
 
         try {
             val querySnapshot = usersCollection
-                .whereEqualTo("phoneNumber", phoneNumber)
+                .document("phoneNumber")
                 .get().get()
 
-            if (!querySnapshot.isEmpty) {
-                return@withContext querySnapshot.documents[0].toObject(UserModel::class.java)
+            if (!querySnapshot.exists()) {
+                return@withContext querySnapshot.toObject(UserModel::class.java)
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
         return@withContext null
-    }
-
-    override suspend fun getUserById(
-        id: String?,
-        onSuccess: suspend (UserModel) -> Unit,
-        onFailure: suspend (String) -> Unit
-    ) = withContext(Dispatchers.IO) {
-        if (id == null) {
-            onFailure("ID is null")
-            return@withContext
-        }
-
-        try {
-            val docSnapshot = usersCollection.document(id).get().get()
-            if (docSnapshot.exists()) {
-                val user = docSnapshot.toObject(UserModel::class.java)
-                if (user != null) {
-                    onSuccess(user)
-                } else {
-                    onFailure("Failed to parse user data")
-                }
-            } else {
-                onFailure("User not found")
-            }
-        } catch (e: Exception) {
-            onFailure(e.message ?: "Error fetching user by ID")
-        }
     }
 
     override suspend fun getAllUsers(
