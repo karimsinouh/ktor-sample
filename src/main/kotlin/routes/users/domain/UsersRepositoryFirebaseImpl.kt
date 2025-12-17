@@ -13,24 +13,15 @@ class UsersRepositoryFirebaseImpl : UsersRepository {
 
     override suspend fun insert(
         user: UserModel?,
-        onSuccess: suspend () -> Unit,
-        onFailure: suspend (String) -> Unit
     ) = withContext(Dispatchers.IO) {
 
         if (user == null || user.phoneNumber==null) {
-            onFailure("User cannot be null")
-            return@withContext
+            throw IllegalArgumentException("User must not be null")
         }
 
-        try {
+        usersCollection.document(user.phoneNumber).set(user).get()
 
-            usersCollection.document(user.phoneNumber)
-                .set(user)
-            onSuccess()
-
-        } catch (e: Exception) {
-            onFailure(e.message ?: "Couldn't add user")
-        }
+        Unit
     }
 
 
@@ -38,100 +29,47 @@ class UsersRepositoryFirebaseImpl : UsersRepository {
     override suspend fun getUserByPhoneNumber(phoneNumber: String?): UserModel? = withContext(Dispatchers.IO) {
         if (phoneNumber == null) return@withContext null
 
-        try {
-            val querySnapshot = usersCollection
-                .document("phoneNumber")
-                .get().get()
+        val querySnapshot = usersCollection
+            .document(phoneNumber)
+            .get().get()
 
-            if (!querySnapshot.exists()) {
-                return@withContext querySnapshot.toObject(UserModel::class.java)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return@withContext null
+        return@withContext if (querySnapshot.exists()) {
+            querySnapshot.toObject(UserModel::class.java)
+        }else
+            null
     }
 
-    override suspend fun getAllUsers(
-        onSuccess: suspend (List<UserModel>) -> Unit,
-        onFailure: suspend (String) -> Unit
-    ) = withContext(Dispatchers.IO) {
-        try {
-            val querySnapshot = usersCollection.get().get()
-            val users = querySnapshot.toObjects(UserModel::class.java)
-            onSuccess(users)
-        } catch (e: Exception) {
-            onFailure(e.message ?: "Error fetching all users")
-        }
+    override suspend fun getAllUsers():List<UserModel> = withContext(Dispatchers.IO) {
+        val querySnapshot = usersCollection.get().get()
+        val users = querySnapshot.toObjects(UserModel::class.java)
+        return@withContext users
     }
 
     override suspend fun deleteByPhoneNumber(
         phoneNumber: String?,
-        onFailure: suspend (String) -> Unit,
-        onSuccess: suspend () -> Unit
-    ) = withContext(Dispatchers.IO) {
-        if (phoneNumber == null) {
-            onFailure("Phone number cannot be null")
-            return@withContext
+    )  {
+        withContext(Dispatchers.IO){
+            if (phoneNumber == null)
+                throw IllegalArgumentException("phone number must not be null")
+
+            usersCollection.document(phoneNumber).delete().get()
         }
 
-        try {
-            // First find the user to get the ID
-            val querySnapshot = usersCollection
-                .whereEqualTo("phoneNumber", phoneNumber)
-                .get()
-                .get()
-
-            if (querySnapshot.documents.isNotEmpty()) {
-                // Delete all documents matching this phone number (usually just one)
-                for (doc in querySnapshot.documents) {
-                    usersCollection.document(doc.id).delete()
-                }
-                onSuccess()
-            } else {
-                onFailure("User not found to delete")
-            }
-        } catch (e: Exception) {
-            onFailure(e.message ?: "Error deleting user")
-        }
     }
 
     override suspend fun update(
         user: UserModel?,
-        onSuccess: suspend () -> Unit,
-        onFailure: suspend (String) -> Unit
-    ) = withContext(Dispatchers.IO) {
-        if (user?.id == null) {
-            onFailure("User or User ID is missing")
-            return@withContext
+    ){
+
+
+        if (user == null) {
+            throw IllegalArgumentException("User or User ID is missing")
         }
 
-        try {
-            // We use set() with input user.
-            // Warning: This overwrites the whole document.
-            // If you only want partial updates, use usersCollection.document(user.id).update(mapOfFields)
-            usersCollection.document(user.id).set(user)
-            onSuccess()
-        } catch (e: Exception) {
-            onFailure(e.message ?: "Error updating user")
+        withContext(Dispatchers.IO){
+            usersCollection.document(user.phoneNumber?:"").set(user).get()
         }
+
     }
 
-    override suspend fun deleteById(
-        id: String?,
-        onFailure: suspend (String) -> Unit,
-        onSuccess: suspend () -> Unit
-    ) = withContext(Dispatchers.IO) {
-        if (id == null) {
-            onFailure("ID cannot be null")
-            return@withContext
-        }
-
-        try {
-            usersCollection.document(id).delete()
-            onSuccess()
-        } catch (e: Exception) {
-            onFailure(e.message ?: "Error deleting user")
-        }
-    }
 }

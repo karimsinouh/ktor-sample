@@ -31,6 +31,7 @@ dependencies {
     testImplementation(libs.kotlin.test.junit)
 
     implementation("io.ktor:ktor-server-resources:3.0.3")
+    implementation("io.ktor:ktor-server-status-pages:3.0.3")
     implementation("io.ktor:ktor-server-content-negotiation:3.0.3")
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3")
 
