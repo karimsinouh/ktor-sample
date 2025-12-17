@@ -4,18 +4,19 @@ import com.example.core.Env
 import com.example.routes.messaging.model.Text
 import com.example.routes.messaging.model.WhatsAppMessageRequest
 import com.example.routes.messaging.model.WhatsappResponseBody
+import features.messaging.domain.SendWhatsappMessageRepo
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 
-class SendWhatsappMessage(
+class SendWhatsappMessageImpl(
     private val client:HttpClient
-) {
+) : SendWhatsappMessageRepo{
 
-    suspend operator fun invoke(
-        phoneNumber:String,
-        message:String,
+    override suspend operator fun invoke(
+        phoneNumber: String,
+        message: String,
     ){
 
         val url="https://graph.facebook.com/v22.0/${Env.WHATSAPP_PHONE_NUMBER_ID}/messages"

@@ -1,10 +1,10 @@
-package com.example.routes.users.domain
+package features.users.data
 
 import ai.koog.agents.core.tools.annotations.LLMDescription
 import ai.koog.agents.core.tools.annotations.Tool
 import ai.koog.agents.core.tools.reflect.ToolSet
-import com.example.routes.users.data.UsersRepository
 import com.example.routes.users.model.UserModel
+import features.users.domain.UsersRepository
 import kotlinx.coroutines.CompletableDeferred
 
 @LLMDescription("tools needed to register users in database")

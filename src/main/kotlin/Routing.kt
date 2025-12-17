@@ -1,18 +1,12 @@
 package com.example
 
-import ai.koog.agents.core.tools.reflect.tools
 import com.example.routes.messaging.presentation.messagesRouting
 import com.example.di.DIModule
 import com.example.routes.templates.presentation.templatesRouting
-import com.example.routes.users.domain.UsersToolSet
-import routes.users.presentation.usersRouting
-import io.ktor.serialization.kotlinx.json.*
+import features.users.presentation.usersRouting
 import io.ktor.server.application.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.resources.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.serialization.json.Json
 
 fun Application.configureRouting(module:DIModule) {
 
@@ -22,9 +16,8 @@ fun Application.configureRouting(module:DIModule) {
             call.respondText("Hello World!")
         }
 
-        messagesRouting(module.chatRepository,module.usersRepository)
+        messagesRouting(module)
         usersRouting(module.usersRepository)
-
         templatesRouting(module.templatesRepository)
 
     }

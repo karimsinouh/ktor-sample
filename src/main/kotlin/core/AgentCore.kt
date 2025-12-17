@@ -8,23 +8,24 @@ import ai.koog.prompt.executor.clients.google.GoogleModels
 import ai.koog.prompt.executor.llms.all.simpleGoogleAIExecutor
 import ai.koog.prompt.executor.llms.all.simpleOpenAIExecutor
 import com.example.routes.messaging.model.MessageModel
-import com.example.routes.users.data.UsersRepository
-import com.example.routes.users.domain.UsersToolSet
+import features.users.domain.UsersRepository
+import features.users.data.UsersToolSet
 
 class AgentCore(
     private val usersRepository: UsersRepository,
-    private val clientPhoneNumber: String,
 ) {
 
 
-    private val tools= ToolRegistry{
-        tools(UsersToolSet(usersRepository,clientPhoneNumber))
-    }
-
     suspend fun run(
-        history: List<MessageModel>,
+        clientPhoneNumber:String,
         clientMessage: String,
+        history: List<MessageModel>,
     ): String{
+
+        val tools= ToolRegistry{
+            tools(UsersToolSet(usersRepository,clientPhoneNumber))
+        }
+
         println("### message received -> $clientMessage from $clientPhoneNumber ")
 
         // 1. Prepare the Input (Context + Task)

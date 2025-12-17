@@ -1,16 +1,17 @@
 package com.example.di
 
-import com.example.routes.messaging.data.SendWhatsappMessage
-import com.example.routes.messaging.domain.ChatRepository
-import com.example.routes.messaging.data.MessagesRepository
-import com.example.routes.messaging.domain.MessagesRepositoryImpl
+import com.example.core.AgentCore
+import com.example.routes.messaging.data.SendWhatsappMessageImpl
+import features.messaging.data.ChatRepository
+import features.messaging.data.MessagesRepositoryImpl
 import com.example.routes.templates.data.SendTemplateMessage
 import com.example.routes.templates.domain.TemplatesRepository
+import features.messaging.useCase.ProcessIncomingWhatsappMessages
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
-import routes.users.domain.UsersRepositoryFirebaseImpl
+import features.users.data.UsersRepositoryFirebaseImpl
 
 class DIModule {
 
@@ -29,7 +30,7 @@ class DIModule {
     }
 
     val sendWhatsappMessage by lazy {
-        SendWhatsappMessage(client)
+        SendWhatsappMessageImpl(client)
     }
 
     val chatRepository by lazy {
@@ -46,6 +47,14 @@ class DIModule {
 
     val templatesRepository by lazy {
         TemplatesRepository(sendTemplateMessage)
+    }
+
+    val agent by lazy {
+        AgentCore(usersRepository)
+    }
+
+    val processIncomingWhatsappMessages by lazy {
+        ProcessIncomingWhatsappMessages(chatRepository,agent)
     }
 
 }

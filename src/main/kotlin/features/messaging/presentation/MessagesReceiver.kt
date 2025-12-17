@@ -2,12 +2,12 @@ package com.example.routes.messaging.presentation
 
 import com.example.core.AgentCore
 import com.example.core.Env
-import com.example.core.model.failureResponse
 import com.example.core.model.getCorrectPhoneNumberFormat
-import com.example.core.model.successResponse
-import com.example.routes.messaging.domain.ChatRepository
+import com.example.di.DIModule
+import features.messaging.data.ChatRepository
 import com.example.routes.messaging.model.WhatsAppMessageResponse
-import com.example.routes.users.data.UsersRepository
+import features.users.domain.UsersRepository
+import features.messaging.useCase.ProcessIncomingWhatsappMessages
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -21,46 +21,24 @@ import io.ktor.server.routing.*
  * Sends a message back to routes.users via Whatsapp API.
  * */
 fun Routing.messagesReceiver(
-    repo: ChatRepository,
-    usersRepository: UsersRepository,
+    processIncomingWhatsappMessages: ProcessIncomingWhatsappMessages,
 )=post("/messages/messagesReceiver") {
 
 
-    //receive the user message and store it in the database
+    //receive the user message
     val requestBody = call.receive<WhatsAppMessageResponse>()
     call.respond(HttpStatusCode.OK)
 
-    val message= extractMessageAndSenderKoog(requestBody)
-    val clientPhoneNumber = getCorrectPhoneNumberFormat(message.first)
-    val text = message.second
+    val phoneAndMessage= extractMessageAndSender(requestBody)
+    val clientPhoneNumber = getCorrectPhoneNumberFormat(phoneAndMessage.first)
+    val message = phoneAndMessage.second
 
 
-    //get the last 10 messages from this conversation from the database
-    val history=repo.messages.getLastMessages(clientPhoneNumber).reversed()
-
-    //store the client message in database
-    repo.messages.insert("user",text, clientPhoneNumber)
-
-
-    //instantiate agent
-    val agent= AgentCore(usersRepository,clientPhoneNumber)
-
-    val aiResponse=agent.run(history,text)
-
-    //store the AI response in the database
-    repo.messages.insert(
-        sender = "assistant",
-        message = aiResponse,
-        userPhoneNumber = clientPhoneNumber
-    )
-
-    //send the AI response back to user via whatsapp
-    repo.sendWhatsappMessage(clientPhoneNumber, aiResponse)
-
+    processIncomingWhatsappMessages(clientPhoneNumber,message)
 
 }
 
-fun extractMessageAndSenderKoog(response: WhatsAppMessageResponse): Pair<String, String> {
+fun extractMessageAndSender(response: WhatsAppMessageResponse): Pair<String, String> {
     val message = response.entry
         .flatMap { it.changes }
         .map { it.value.messages }

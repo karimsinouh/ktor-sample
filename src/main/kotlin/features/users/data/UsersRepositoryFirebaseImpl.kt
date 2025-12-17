@@ -1,8 +1,8 @@
-package routes.users.domain
+package features.users.data
 
-import com.example.routes.users.data.UsersRepository
 import com.example.routes.users.model.UserModel
 import com.google.firebase.cloud.FirestoreClient
+import features.users.domain.UsersRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -15,7 +15,7 @@ class UsersRepositoryFirebaseImpl : UsersRepository {
         user: UserModel?,
     ) = withContext(Dispatchers.IO) {
 
-        if (user == null || user.phoneNumber==null) {
+        if (user == null || user.phoneNumber == null) {
             throw IllegalArgumentException("User must not be null")
         }
 
@@ -35,7 +35,7 @@ class UsersRepositoryFirebaseImpl : UsersRepository {
 
         return@withContext if (querySnapshot.exists()) {
             querySnapshot.toObject(UserModel::class.java)
-        }else
+        } else
             null
     }
 
@@ -48,7 +48,7 @@ class UsersRepositoryFirebaseImpl : UsersRepository {
     override suspend fun deleteByPhoneNumber(
         phoneNumber: String?,
     )  {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             if (phoneNumber == null)
                 throw IllegalArgumentException("phone number must not be null")
 
@@ -66,8 +66,8 @@ class UsersRepositoryFirebaseImpl : UsersRepository {
             throw IllegalArgumentException("User or User ID is missing")
         }
 
-        withContext(Dispatchers.IO){
-            usersCollection.document(user.phoneNumber?:"").set(user).get()
+        withContext(Dispatchers.IO) {
+            usersCollection.document(user.phoneNumber ?: "").set(user).get()
         }
 
     }

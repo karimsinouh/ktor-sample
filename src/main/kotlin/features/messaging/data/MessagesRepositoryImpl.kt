@@ -1,10 +1,9 @@
-package com.example.routes.messaging.domain
+package features.messaging.data
 
-import com.example.routes.messaging.data.MessagesRepository
+import features.messaging.domain.MessagesRepository
 import com.example.routes.messaging.model.MessageModel
 import com.google.cloud.firestore.Query
 import com.google.firebase.cloud.FirestoreClient
-import com.google.firebase.internal.FirebaseService
 
 class MessagesRepositoryImpl: MessagesRepository {
 
@@ -16,7 +15,7 @@ class MessagesRepositoryImpl: MessagesRepository {
             .document(userPhoneNumber)
             .collection("messages")
 
-        val messageModel= MessageModel(sender,message,userPhoneNumber, System.currentTimeMillis())
+        val messageModel= MessageModel(sender, message, userPhoneNumber, System.currentTimeMillis())
         messagesCollection.add(messageModel)
     }
 

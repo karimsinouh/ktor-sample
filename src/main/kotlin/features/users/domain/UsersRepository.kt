@@ -1,4 +1,4 @@
-package com.example.routes.users.data
+package features.users.domain
 
 import com.example.routes.users.model.UserModel
 

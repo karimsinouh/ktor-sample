@@ -1,4 +1,4 @@
-package com.example.routes.messaging.data
+package features.messaging.domain
 
 import com.example.routes.messaging.model.MessageModel
 

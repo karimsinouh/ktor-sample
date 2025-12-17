@@ -1,8 +1,8 @@
-package routes.users.presentation
+package features.users.presentation
 
 import com.example.core.model.failureResponse
 import com.example.core.model.successResponse
-import com.example.routes.users.data.UsersRepository
+import features.users.domain.UsersRepository
 import com.example.routes.users.model.UserModel
 import io.ktor.server.request.*
 import io.ktor.server.routing.*

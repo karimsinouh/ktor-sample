@@ -3,7 +3,7 @@ package com.example.routes.messaging.model
 import kotlinx.serialization.Serializable
 
 /**
- * This is used to send a message to whatsapp
+ * This is used to send a message via whatsapp
  * */
 
 @kotlinx.serialization.Serializable
