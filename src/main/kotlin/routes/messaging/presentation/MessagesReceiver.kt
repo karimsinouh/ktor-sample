@@ -25,50 +25,38 @@ fun Routing.messagesReceiver(
     usersRepository: UsersRepository,
 )=post("/messages/messagesReceiver") {
 
-    try {
+
+    //receive the user message and store it in the database
+    val requestBody = call.receive<WhatsAppMessageResponse>()
+    call.respond(HttpStatusCode.OK)
+
+    val message= extractMessageAndSenderKoog(requestBody)
+    val clientPhoneNumber = getCorrectPhoneNumberFormat(message.first)
+    val text = message.second
 
 
-        //receive the user message and store it in the database
-        val requestBody = call.receive<WhatsAppMessageResponse>()
-        call.respond(HttpStatusCode.OK)
+    //get the last 10 messages from this conversation from the database
+    val history=repo.messages.getLastMessages(clientPhoneNumber).reversed()
 
-        val message= extractMessageAndSenderKoog(requestBody)
-        val clientPhoneNumber = getCorrectPhoneNumberFormat(message.first)
-        val text = message.second
+    //store the client message in database
+    repo.messages.insert("user",text, clientPhoneNumber)
 
 
-        //get the last 10 messages from this conversation from the database
-        val history=repo.messages.getLastMessages(clientPhoneNumber).reversed()
+    //instantiate agent
+    val agent= AgentCore(usersRepository,clientPhoneNumber)
 
-        //store the client message in database
-        repo.messages.insert("user",text, clientPhoneNumber)
+    val aiResponse=agent.run(history,text)
 
+    //store the AI response in the database
+    repo.messages.insert(
+        sender = "assistant",
+        message = aiResponse,
+        userPhoneNumber = clientPhoneNumber
+    )
 
-        //instantiate agent
-        val agent= AgentCore(usersRepository,clientPhoneNumber)
+    //send the AI response back to user via whatsapp
+    repo.sendWhatsappMessage(clientPhoneNumber, aiResponse)
 
-        val aiResponse=agent.run(history,text)
-
-        //store the AI response in the database
-        repo.messages.insert(
-            sender = "assistant",
-            message = aiResponse,
-            userPhoneNumber = clientPhoneNumber
-        )
-
-        //send the AI response back to user via whatsapp
-        repo.sendWhatsappMessage(
-            phoneNumber = clientPhoneNumber,
-            message=aiResponse,
-            onSuccess = ::successResponse,
-            onFailure = ::failureResponse
-        )
-
-
-    } catch (e: Exception) {
-        println(e.message?:"Message receiving failed")
-        failureResponse(e.message?:"Message receiving failed")
-    }
 
 }
 

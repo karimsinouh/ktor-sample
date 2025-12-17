@@ -16,43 +16,33 @@ class SendWhatsappMessage(
     suspend operator fun invoke(
         phoneNumber:String,
         message:String,
-        onSuccess:suspend (String)->Unit,
-        onFailure:suspend (String)->Unit
     ){
 
         val url="https://graph.facebook.com/v22.0/${Env.WHATSAPP_PHONE_NUMBER_ID}/messages"
-        try {
 
-            val response=client.post(url) {
-                headers {
-                    append(HttpHeaders.ContentType,"application/json")
-                    append(HttpHeaders.Authorization,"Bearer ${Env.WHATSAPP_ACCESS_TOKEN}")
-                }
-                val requestBody= WhatsAppMessageRequest(
-                    messaging_product = "whatsapp",
-                    to = phoneNumber,
-                    type = "text",
-                    text = Text(message)
-                )
-                setBody(requestBody)
+        val response=client.post(url) {
+            headers {
+                append(HttpHeaders.ContentType,"application/json")
+                append(HttpHeaders.Authorization,"Bearer ${Env.WHATSAPP_ACCESS_TOKEN}")
             }
-
-            if (response.status.value==200){
-                val responseBody: WhatsappResponseBody =response.body()
-
-                if (responseBody.error!=null){
-                    onFailure(responseBody.error.message)
-                }else{
-                    onSuccess("Message ($message) sent to $phoneNumber")
-                }
-
-            }else{
-                onFailure(response.toString())
-            }
-
-        }catch (e:Exception){
-            onFailure(e.message?:"Failed to send WhatApp message")
+            val requestBody= WhatsAppMessageRequest(
+                messaging_product = "whatsapp",
+                to = phoneNumber,
+                type = "text",
+                text = Text(message)
+            )
+            setBody(requestBody)
         }
+
+        if (response.status.value==200){
+            val responseBody: WhatsappResponseBody =response.body()
+
+            if (responseBody.error!=null)
+                throw IllegalArgumentException(responseBody.error.message)
+
+
+        }else
+            throw IllegalArgumentException(response.toString())
 
     }
 

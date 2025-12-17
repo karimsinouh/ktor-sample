@@ -25,64 +25,25 @@ fun Routing.usersRouting(repo: UsersRepository){
     }
 
     get("users/get")  {
-        try {
-            repo.getAllUsers(::successResponse, ::failureResponse)
-        }catch (e:Exception){
-            failureResponse(e.message?:"")
-        }
+        val users=repo.getAllUsers()
+        successResponse(users)
     }
 
     post("users/update") {
-        try {
-            val user=call.receive<UserModel>()
 
-            print(user.toString())
+        val user=call.receive<UserModel>()
+        repo.update(user)
 
-            repo.update(
-                user=user,
-                onSuccess = {
-                    successResponse("User successfully inserted")
-                },
-                onFailure = ::failureResponse
-            )
-
-        }catch (e:Exception){
-            failureResponse(e.message?:"")
-        }
     }
 
     put("users/insert"){
-        try {
-            val user=call.receive<UserModel>()
-
-            repo.insert(
-                user=user,
-                onSuccess = {
-                    successResponse("User successfully inserted")
-                },
-                onFailure = ::failureResponse
-            )
-
-        }catch (e:IllegalStateException){
-            successResponse("User successfully inserted")
-        }catch (e:Exception){
-            failureResponse("From presentation: ${e.message}"?:"")
-        }
+        val user=call.receive<UserModel>()
+        repo.insert(user)
     }
 
     delete("users/delete/{id}"){
-        try {
-            val id=call.parameters["id"]
-            repo.deleteById(
-                id=id,
-                onSuccess = {
-                    successResponse("User deleted")
-                },
-                onFailure = ::failureResponse
-            )
-        }catch (e:Exception){
-            failureResponse(e.message?:"")
-        }
+        val id=call.parameters["id"]
+        repo.deleteByPhoneNumber(id)
     }
 
 }

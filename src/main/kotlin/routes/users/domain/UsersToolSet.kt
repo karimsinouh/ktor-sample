@@ -38,17 +38,10 @@ class UsersToolSet(
 
         repo.insert(
             user=user,
-            onSuccess = {
-                println("DEBUG: DB Write Success")
-                deferredResult.complete("User registered successfully.")
-            },
-            onFailure = { errorMsg ->
-                println("DEBUG: DB Write FAILED: $errorMsg")
-                // Propagate the error to the Agent so it knows it failed
-                deferredResult.completeExceptionally(Exception("Database Error: $errorMsg"))
-            }
         )
 
+        println("DEBUG: DB Write Success")
+        deferredResult.complete("User registered successfully.")
         // This will throw the exception if onFailure was called,
         // forcing the Agent to see the error.
         return deferredResult.await()

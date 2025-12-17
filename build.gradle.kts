@@ -39,12 +39,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
 
-    //database
-    implementation("org.postgresql:postgresql:42.7.2") // PostgreSQL driver
-    implementation("org.jetbrains.exposed:exposed-core:0.59.0") // Exposed ORM
-    implementation("org.jetbrains.exposed:exposed-dao:0.59.0")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.59.0")
-
     //http client
     implementation("io.ktor:ktor-client-core:3.1.0")
     implementation("io.ktor:ktor-client-cio:3.1.0")
