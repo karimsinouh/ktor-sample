@@ -33,7 +33,7 @@ fun Routing.messagesReceiver(
     val clientPhoneNumber = getCorrectPhoneNumberFormat(phoneAndMessage.first)
     val message = phoneAndMessage.second
 
-
+    
     processIncomingWhatsappMessages(clientPhoneNumber,message)
 
 }
@@ -42,7 +42,7 @@ fun extractMessageAndSender(response: WhatsAppMessageResponse): Pair<String, Str
     val message = response.entry
         .flatMap { it.changes }
         .map { it.value.messages }
-        .firstOrNull { it.isNotEmpty() }
+        .firstOrNull { it?.isNotEmpty()==true }
         ?.firstOrNull()
         ?: throw IllegalStateException("No valid message found in webhook payload")
 

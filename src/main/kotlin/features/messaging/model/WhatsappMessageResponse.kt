@@ -27,8 +27,8 @@ data class Change(
 data class Value(
     val messaging_product: String,
     val metadata: Metadata,
-    val contacts: List<Contact>,
-    val messages: List<Message>
+    val contacts: List<Contact>?=null,
+    val messages: List<Message>?=null,
 )
 
 @Serializable
