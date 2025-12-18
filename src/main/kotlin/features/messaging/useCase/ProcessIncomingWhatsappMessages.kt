@@ -2,34 +2,38 @@ package features.messaging.useCase
 
 import com.example.core.AgentCore
 import features.messaging.data.ChatRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 class ProcessIncomingWhatsappMessages(
     private val chatRepository: ChatRepository,
     private val agent: AgentCore,
 ) {
 
-    suspend operator fun invoke(
-        clientPhoneNumber:String,
-        message: String
-    ){
-        //get the last 10 messages from this conversation from the database
-        val history=chatRepository.messages.getLastMessages(clientPhoneNumber).reversed()
+    suspend operator fun invoke(clientPhoneNumber: String, message: String) = coroutineScope {
+        // 1. Save User Message & Fetch History concurrently
+        val historyDeferred = async { chatRepository.messages.getLastMessages(clientPhoneNumber).reversed() }
+        val saveUserMsgJob = async { chatRepository.messages.insert("user", message, clientPhoneNumber) }
 
-        //store the client message in database
-        chatRepository.messages.insert("user",message, clientPhoneNumber)
 
-        //get ai response
-        val aiResponse=agent.run(clientPhoneNumber,message,history)
+        val history = historyDeferred.await()
+        // We don't necessarily need to wait for saveUserMsgJob to finish before calling AI
 
-        //store the AI response in the database
-        chatRepository.messages.insert(
-            sender = "assistant",
-            message = aiResponse,
-            userPhoneNumber = clientPhoneNumber
-        )
+        // 2. Heavy AI Processing
+        val aiResponse = agent.run(clientPhoneNumber, message, history)
 
-        //send the AI response back to user via whatsapp
-        chatRepository.sendWhatsappMessage(clientPhoneNumber, aiResponse)
+        // 3. Save AI Response & Send to WhatsApp concurrently
+        // This cuts latency by ~50% for this step
+        val saveJob = async {
+            chatRepository.messages.insert("assistant", aiResponse, clientPhoneNumber)
+        }
+        val sendJob = async {
+            chatRepository.sendWhatsappMessage(clientPhoneNumber, aiResponse)
+        }
+
+        // Wait for both to finish
+        saveJob.await()
+        sendJob.await()
     }
 
 }
