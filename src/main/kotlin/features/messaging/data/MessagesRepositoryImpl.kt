@@ -1,7 +1,7 @@
 package features.messaging.data
 
 import features.messaging.domain.MessagesRepository
-import com.example.routes.messaging.model.MessageModel
+import com.example.features.messaging.model.MessageModel
 import com.google.cloud.firestore.Query
 import com.google.firebase.cloud.FirestoreClient
 

@@ -1,12 +1,8 @@
-package com.example.routes.messaging.presentation
+package com.example.features.messaging.presentation
 
-import com.example.core.AgentCore
 import com.example.core.Env
 import com.example.core.model.getCorrectPhoneNumberFormat
-import com.example.di.DIModule
-import features.messaging.data.ChatRepository
-import com.example.routes.messaging.model.WhatsAppMessageResponse
-import features.users.domain.UsersRepository
+import com.example.features.messaging.model.WhatsAppMessageResponse
 import features.messaging.useCase.ProcessIncomingWhatsappMessages
 import io.ktor.http.*
 import io.ktor.server.request.*
@@ -29,22 +25,24 @@ fun Routing.messagesReceiver(
     val requestBody = call.receive<WhatsAppMessageResponse>()
     call.respond(HttpStatusCode.OK)
 
-    val phoneAndMessage= extractMessageAndSender(requestBody)
+    val phoneAndMessage = extractMessageAndSender(requestBody) ?: return@post
     val clientPhoneNumber = getCorrectPhoneNumberFormat(phoneAndMessage.first)
     val message = phoneAndMessage.second
 
-    
+
     processIncomingWhatsappMessages(clientPhoneNumber,message)
 
 }
 
-fun extractMessageAndSender(response: WhatsAppMessageResponse): Pair<String, String> {
+fun extractMessageAndSender(response: WhatsAppMessageResponse): Pair<String, String>? {
     val message = response.entry
         .flatMap { it.changes }
-        .map { it.value.messages }
-        .firstOrNull { it?.isNotEmpty()==true }
-        ?.firstOrNull()
-        ?: throw IllegalStateException("No valid message found in webhook payload")
+        .mapNotNull { it.value.messages } // Use mapNotNull to safely access nullable messages
+        .flatten()
+        .firstOrNull()
+
+    // If no message found (e.g., status update), return null
+    if (message == null) return null
 
     return message.from to message.text.body
 }

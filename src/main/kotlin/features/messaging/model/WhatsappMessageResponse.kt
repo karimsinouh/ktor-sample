@@ -1,5 +1,6 @@
-package com.example.routes.messaging.model
+package com.example.features.messaging.model
 
+import com.example.routes.messaging.model.Text
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

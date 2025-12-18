@@ -3,11 +3,9 @@ package com.example.core
 import ai.koog.agents.core.agent.AIAgent
 import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.core.tools.reflect.tools
-import ai.koog.agents.ext.agent.chatAgentStrategy
 import ai.koog.prompt.executor.clients.google.GoogleModels
 import ai.koog.prompt.executor.llms.all.simpleGoogleAIExecutor
-import ai.koog.prompt.executor.llms.all.simpleOpenAIExecutor
-import com.example.routes.messaging.model.MessageModel
+import com.example.features.messaging.model.MessageModel
 import features.users.domain.UsersRepository
 import features.users.data.UsersToolSet
 

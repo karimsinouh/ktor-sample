@@ -1,6 +1,6 @@
 package features.messaging.domain
 
-import com.example.routes.messaging.model.MessageModel
+import com.example.features.messaging.model.MessageModel
 
 interface MessagesRepository {
 

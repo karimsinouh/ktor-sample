@@ -1,7 +1,6 @@
-package com.example.routes.messaging.model
+package com.example.features.messaging.model
 
 import kotlinx.serialization.Serializable
-import java.util.*
 
 @Serializable
 data class MessageModel(
