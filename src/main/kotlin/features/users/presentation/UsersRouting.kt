@@ -33,17 +33,19 @@ fun Routing.usersRouting(repo: UsersRepository){
 
         val user=call.receive<UserModel>()
         repo.update(user)
-
+        successResponse("user updated")
     }
 
     put("users/insert"){
         val user=call.receive<UserModel>()
         repo.insert(user)
+        successResponse("user inserted")
     }
 
     delete("users/delete/{id}"){
         val id=call.parameters["id"]
         repo.deleteByPhoneNumber(id)
+        successResponse("user deleted")
     }
 
 }
