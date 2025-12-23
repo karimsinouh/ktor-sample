@@ -17,7 +17,7 @@ fun Routing.getMessages(messagesRepository: MessagesRepository){
             return@get
         }
 
-        val messages = messagesRepository.getLastMessages(phoneNumber)
+        val messages = messagesRepository.getLastMessages(phoneNumber,20)
         successResponse(messages)
     }
 

@@ -15,8 +15,10 @@ class GlobalConfigsHolder(private val configRepository: ConfigRepository) {
 
         if (result.isSuccess)
             configs=result.getOrNull()
-        else
-            throw IllegalArgumentException("Could not load configs from database")
+        else{
+            //log this error
+
+        }
     }
 
     fun updateInMemory(newConfigs: ConfigModel){

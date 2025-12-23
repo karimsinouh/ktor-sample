@@ -53,7 +53,7 @@ class DIModule {
     }
 
     val agent by lazy {
-        AgentCore(usersRepository)
+        AgentCore(usersRepository,globalConfigsHolder)
     }
 
     val processIncomingWhatsappMessages by lazy {
