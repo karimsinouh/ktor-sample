@@ -16,7 +16,11 @@ class ConfigRepositoryImpl: ConfigRepository {
             "messagesLimit" to configs.messagesLimit,
             "maintenanceMode" to configs.maintenanceMode
         )
-        configsDocument.update(fields).get()
+        try {
+            configsDocument.set(fields).get()
+        }catch (e: Exception){
+            throw e
+        }
     }
 
     override suspend fun updateApiKey(newKey: String?) {

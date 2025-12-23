@@ -37,7 +37,7 @@ fun Application.module() {
             call.respond(
                 status = HttpStatusCode.InternalServerError,
                 message = mapOf(
-                    "error" to (cause.message ?: "Unknown error")
+                    "message" to (cause.message ?: "Unknown error")
                 )
             )
             // Log the error here instead of in every route
