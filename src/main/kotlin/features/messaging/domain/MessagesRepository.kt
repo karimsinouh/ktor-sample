@@ -12,6 +12,7 @@ interface MessagesRepository {
 
     suspend fun getLastMessages(
         userPhoneNumber: String,
+        limit: Int?
     ):List<MessageModel>
 
 }

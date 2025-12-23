@@ -7,6 +7,6 @@ import io.ktor.server.routing.*
 
 fun Routing.messagesRouting(module: DIModule) {
     getMessages(module.chatRepository.messages)
-    messagesReceiver(module.processIncomingWhatsappMessages)
+    messagesReceiver(module)
     verifyTokenKoog()
 }

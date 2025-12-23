@@ -10,9 +10,9 @@ class ProcessIncomingWhatsappMessages(
     private val agent: AgentCore,
 ) {
 
-    suspend operator fun invoke(clientPhoneNumber: String, message: String) = coroutineScope {
+    suspend operator fun invoke(clientPhoneNumber: String, message: String,messagesLimit:Int?) = coroutineScope {
         // 1. Save User Message & Fetch History concurrently
-        val historyDeferred = async { chatRepository.messages.getLastMessages(clientPhoneNumber).reversed() }
+        val historyDeferred = async { chatRepository.messages.getLastMessages(clientPhoneNumber,messagesLimit).reversed() }
         val saveUserMsgJob = async { chatRepository.messages.insert("user", message, clientPhoneNumber) }
 
 

@@ -19,11 +19,11 @@ class MessagesRepositoryImpl: MessagesRepository {
         messagesCollection.add(messageModel)
     }
 
-    override suspend fun getLastMessages(userPhoneNumber: String): List<MessageModel> {
+    override suspend fun getLastMessages(userPhoneNumber: String,limit: Int?): List<MessageModel> {
         val messagesCollection = db.collection("users")
             .document(userPhoneNumber)
             .collection("messages")
-            .limit(15)
+            .limit(limit?:15)
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .get()
             .get()

@@ -9,6 +9,7 @@ package com.example
  import io.ktor.server.plugins.statuspages.StatusPages
  import io.ktor.server.resources.Resources
  import io.ktor.server.response.respond
+ import kotlinx.coroutines.runBlocking
  import kotlinx.serialization.json.Json
 
 fun main(args: Array<String>) {
@@ -19,6 +20,9 @@ fun Application.module() {
 
     FirebaseAdmin.init()
     val dependencyInjectionModule=DIModule()
+    runBlocking {
+        dependencyInjectionModule.globalConfigsHolder.load()
+    }
 
     install(Resources)
     install(ContentNegotiation){

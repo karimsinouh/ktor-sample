@@ -2,8 +2,8 @@ package com.example.features.messaging.presentation
 
 import com.example.core.Env
 import com.example.core.model.getCorrectPhoneNumberFormat
+import com.example.di.DIModule
 import com.example.features.messaging.model.WhatsAppMessageResponse
-import features.messaging.useCase.ProcessIncomingWhatsappMessages
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -17,7 +17,7 @@ import io.ktor.server.routing.*
  * Sends a message back to routes.users via Whatsapp API.
  * */
 fun Routing.messagesReceiver(
-    processIncomingWhatsappMessages: ProcessIncomingWhatsappMessages,
+    module: DIModule,
 )=post("/messages/messagesReceiver") {
 
 
@@ -30,7 +30,8 @@ fun Routing.messagesReceiver(
     val message = phoneAndMessage.second
 
 
-    processIncomingWhatsappMessages(clientPhoneNumber,message)
+    val messagesLimit=module.globalConfigsHolder.configs?.messagesLimit
+    module.processIncomingWhatsappMessages(clientPhoneNumber,message,messagesLimit)
 
 }
 

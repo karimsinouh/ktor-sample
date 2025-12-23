@@ -5,12 +5,14 @@ import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.core.tools.reflect.tools
 import ai.koog.prompt.executor.clients.google.GoogleModels
 import ai.koog.prompt.executor.llms.all.simpleGoogleAIExecutor
+import com.example.features.config.data.GlobalConfigsHolder
 import com.example.features.messaging.model.MessageModel
 import features.users.domain.UsersRepository
 import features.users.data.UsersToolSet
 
 class AgentCore(
     private val usersRepository: UsersRepository,
+    private val globalConfigsHolder: GlobalConfigsHolder,
 ) {
 
 
@@ -19,6 +21,8 @@ class AgentCore(
         clientMessage: String,
         history: List<MessageModel>,
     ): String{
+
+        val configs=globalConfigsHolder.configs ?: throw IllegalStateException("Could not find configs for this app")
 
         val tools= ToolRegistry{
             tools(UsersToolSet(usersRepository,clientPhoneNumber))
@@ -42,10 +46,11 @@ class AgentCore(
         println("\n\nagent input: $agentInput")
 
         val agent= AIAgent(
-            promptExecutor = simpleGoogleAIExecutor(Env.GEMINI_KEY),
-            systemPrompt = Env.TRAINING_MESSAGE,
+            promptExecutor = simpleGoogleAIExecutor(configs.geminiKey?:""),
+            systemPrompt = configs.trainingPrompt?:"",
             llmModel = GoogleModels.Gemini2_0Flash,
-            toolRegistry = tools
+            toolRegistry = tools,
+
         )
 
         val response=agent.run(agentInput)
