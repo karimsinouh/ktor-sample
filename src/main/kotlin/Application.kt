@@ -3,10 +3,13 @@ package com.example
  import com.example.di.DIModule
  import com.example.core.FirebaseAdmin
  import com.example.features.errorsLog.model.ErrorLogModel
+ import io.ktor.http.HttpHeaders
+ import io.ktor.http.HttpMethod
  import io.ktor.http.HttpStatusCode
  import io.ktor.serialization.kotlinx.json.json
  import io.ktor.server.application.*
  import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+ import io.ktor.server.plugins.cors.routing.CORS
  import io.ktor.server.plugins.statuspages.StatusPages
  import io.ktor.server.resources.Resources
  import io.ktor.server.response.respond
@@ -31,8 +34,6 @@ fun Application.module() {
             ignoreUnknownKeys = true
         })
     }
-
-
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             call.respond(
@@ -60,6 +61,27 @@ fun Application.module() {
             }
         }
     }
+
+    install(CORS) {
+        // 1. Allow your specific GitHub Pages domain
+        // (Do NOT include "https://" or slashes here, just the domain)
+        allowHost("karimsinouh.github.io", schemes = listOf("https"))
+
+        // OR, for testing only, you can allow everyone (less secure):
+        // anyHost()
+
+        // 2. Allow common headers used in fetch requests
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.Authorization)
+
+        // 3. Allow standard methods
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Post)
+        allowMethod(HttpMethod.Put)
+        allowMethod(HttpMethod.Delete)
+    }
+
+
 
     configureRouting(dependencyInjectionModule)
 
