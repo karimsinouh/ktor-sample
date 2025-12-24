@@ -4,6 +4,7 @@ import com.example.core.AgentCore
 import com.example.features.config.data.ConfigRepositoryImpl
 import com.example.features.config.data.GlobalConfigsHolder
 import com.example.features.config.domain.ConfigRepository
+import com.example.features.errorsLog.data.ErrorsLogRepository
 import com.example.routes.messaging.data.SendWhatsappMessageImpl
 import features.messaging.data.ChatRepository
 import features.messaging.data.MessagesRepositoryImpl
@@ -65,5 +66,9 @@ class DIModule {
     }
 
     val globalConfigsHolder= GlobalConfigsHolder(configsRepository)
+
+    val errorsLogs by lazy {
+        ErrorsLogRepository()
+    }
 
 }
