@@ -25,4 +25,8 @@ class GlobalConfigsHolder(private val configRepository: ConfigRepository) {
         configs=newConfigs
     }
 
+    fun updateInMemory(apiKey: String){
+        configs=configs?.copy(geminiKey =apiKey)
+    }
+
 }

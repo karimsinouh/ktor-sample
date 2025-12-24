@@ -28,6 +28,7 @@ fun Routing.configRouting(
     post("/configs/apikey/update") {
         val apiKey=call.parameters["key"]
         configsRepository.updateApiKey(apiKey)
+        globalConfigsHolder.updateInMemory(apiKey?:"")
         successResponse("API Key updated!")
     }
 

@@ -28,7 +28,11 @@ class ConfigRepositoryImpl: ConfigRepository {
         val fields=mapOf(
             "geminiKey" to newKey,
         )
-        configsDocument.update(fields).get()
+        try {
+            configsDocument.set(fields).get()
+        }catch (e: Exception){
+            throw e
+        }
     }
 
     override suspend fun getConfigs(): Result<ConfigModel> {
