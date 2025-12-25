@@ -15,4 +15,6 @@ interface MessagesRepository {
         limit: Int?
     ):List<MessageModel>
 
+    suspend fun clearChatHistory( userPhoneNumber:String)
+
 }

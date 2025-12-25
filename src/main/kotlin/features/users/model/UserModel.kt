@@ -13,4 +13,5 @@ data class UserModel(
     val pack: String?=null,
     val option:String?=null,
     val time:Long?=null,
+    val comment:String?=null,
 )

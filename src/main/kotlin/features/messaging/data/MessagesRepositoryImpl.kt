@@ -34,4 +34,13 @@ class MessagesRepositoryImpl: MessagesRepository {
             emptyList()
 
     }
+
+    override suspend fun clearChatHistory(userPhoneNumber: String) {
+        val ref=db.collection("users")
+            .document(userPhoneNumber)
+            .collection("messages")
+
+        db.recursiveDelete(ref)
+
+    }
 }

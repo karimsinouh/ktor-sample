@@ -22,5 +22,18 @@ fun Routing.getMessages(messagesRepository: MessagesRepository){
     }
 
 
+    delete("messages/delete/{phoneNumber}") {
+
+        val phoneNumber = call.parameters["phoneNumber"]
+
+        if (phoneNumber.isNullOrBlank()) {
+            failureResponse("Phone number is required")
+            return@delete
+        }
+
+        messagesRepository.clearChatHistory(phoneNumber)
+        successResponse("Chat history has been cleared")
+    }
+
 
 }

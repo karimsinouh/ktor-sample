@@ -52,7 +52,16 @@ class UsersRepositoryFirebaseImpl : UsersRepository {
             if (phoneNumber == null)
                 throw IllegalArgumentException("phone number must not be null")
 
+            //delete the user document
             usersCollection.document(phoneNumber).delete().get()
+
+            //delete the user's messages
+            val messagesCollectionRef=db.collection("users")
+                .document(phoneNumber)
+                .collection("messages")
+
+            db.recursiveDelete(messagesCollectionRef)
+
         }
 
     }
