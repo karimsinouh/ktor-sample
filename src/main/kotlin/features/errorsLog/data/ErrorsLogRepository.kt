@@ -21,7 +21,6 @@ class ErrorsLogRepository {
         }
     }
 
-
     fun getLogs(): Result<List<ErrorLogModel>>{
         return try {
 
@@ -39,5 +38,23 @@ class ErrorsLogRepository {
         }
     }
 
+    fun update(model: ErrorLogModel):Result<Unit>{
+
+        if(model.id==null){
+            return Result.failure(Exception("Error log's ID can't be null"))
+        }
+        val fields=mapOf(
+            "seen" to model.seen
+        )
+        return try {
+
+            errorsCollection.document(model.id)
+                .update(fields)
+                .get()
+            Result.success(Unit)
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
 
 }

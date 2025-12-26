@@ -9,5 +9,6 @@ data class ErrorLogModel(
     val message: String = "",
     val stackTrace: String = "",
     val timestamp: Long = System.currentTimeMillis(),
-    val path: String = "unknown"
+    val path: String = "unknown",
+    val seen:Boolean?=false
 )
