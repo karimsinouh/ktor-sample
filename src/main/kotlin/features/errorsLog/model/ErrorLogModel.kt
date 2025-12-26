@@ -1,10 +1,11 @@
 package com.example.features.errorsLog.model
 
+import com.google.cloud.firestore.annotation.DocumentId
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class ErrorLogModel(
-    val id: String? = null,
+    @DocumentId val id: String? = null,
     val level: String = "ERROR",
     val message: String = "",
     val stackTrace: String = "",

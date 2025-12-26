@@ -28,7 +28,7 @@ fun Routing.errorsLogsRouting(errorsLogsRepository: ErrorsLogRepository){
         val body=call.receive<ErrorLogModel>()
         val response=errorsLogsRepository.update(body)
         if (response.isSuccess){
-            successResponse("Error log has been successfully updatedy")
+            successResponse("Error log has been successfully updated")
         }else{
             failureResponse(response.exceptionOrNull()?.message?:"Could not update error log")
         }
