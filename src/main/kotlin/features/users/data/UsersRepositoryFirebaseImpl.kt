@@ -1,6 +1,7 @@
 package features.users.data
 
 import com.example.routes.users.model.UserModel
+import com.google.cloud.firestore.Query
 import com.google.firebase.cloud.FirestoreClient
 import features.users.domain.UsersRepository
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +41,7 @@ class UsersRepositoryFirebaseImpl : UsersRepository {
     }
 
     override suspend fun getAllUsers():List<UserModel> = withContext(Dispatchers.IO) {
-        val querySnapshot = usersCollection.get().get()
+        val querySnapshot = usersCollection.orderBy("timestamp", Query.Direction.DESCENDING).get().get()
         val users = querySnapshot.toObjects(UserModel::class.java)
         return@withContext users
     }
