@@ -1,5 +1,6 @@
 package com.example.features.errorsLog.data
 
+import com.example.core.SendNotification
 import com.example.features.errorsLog.model.ErrorLogModel
 import com.google.firebase.cloud.FirestoreClient
 
@@ -14,6 +15,7 @@ class ErrorsLogRepository {
         return try {
 
             errorsCollection.add(log).get().get()
+            SendNotification.error(log)
             Result.success(Unit)
 
         }catch (e: Exception){

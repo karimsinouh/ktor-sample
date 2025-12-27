@@ -3,6 +3,7 @@ package features.users.data
 import ai.koog.agents.core.tools.annotations.LLMDescription
 import ai.koog.agents.core.tools.annotations.Tool
 import ai.koog.agents.core.tools.reflect.ToolSet
+import com.example.core.SendNotification
 import com.example.routes.users.model.UserModel
 import features.users.domain.UsersRepository
 import kotlinx.coroutines.CompletableDeferred
@@ -39,6 +40,8 @@ class UsersToolSet(
         repo.insert(
             user=user,
         )
+
+        SendNotification.userRegistration(user)
 
         println("DEBUG: DB Write Success")
         deferredResult.complete("User registered successfully.")
