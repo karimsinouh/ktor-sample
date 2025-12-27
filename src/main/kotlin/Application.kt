@@ -1,5 +1,6 @@
 package com.example
 
+ import com.example.core.Env
  import com.example.di.DIModule
  import com.example.core.FirebaseAdmin
  import com.example.features.errorsLog.model.ErrorLogModel
@@ -11,6 +12,8 @@ package com.example
  import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
  import io.ktor.server.plugins.cors.routing.CORS
  import io.ktor.server.plugins.statuspages.StatusPages
+ import io.ktor.server.request.header
+ import io.ktor.server.request.path
  import io.ktor.server.resources.Resources
  import io.ktor.server.response.respond
  import kotlinx.coroutines.runBlocking
@@ -81,6 +84,24 @@ fun Application.module() {
         allowMethod(HttpMethod.Delete)
     }
 
+    intercept(ApplicationCallPipeline.Call){
+        val path=call.request.path()
+        if (path.contains("/messages/messagesReceiver")) {
+            return@intercept
+        }
+        val apiKey=call.request.header("x-api-key")
+        val serverAPIKey=Env.SERVER_API_KEY
+
+        if (apiKey!=serverAPIKey){
+            call.respond(
+                status = HttpStatusCode.Forbidden,
+                message=mapOf(
+                    "status" to "failure",
+                    "message" to "Call Unauthorized. Invalid Server API Key"
+                )
+            )
+        }
+    }
 
 
     configureRouting(dependencyInjectionModule)
