@@ -18,12 +18,9 @@ fun Application.configureRouting(module:DIModule) {
     routing {
 
         get("/") {
-            val sendNotif=SendNotification.userRegistration(UserModel(name = "Abdelkarim SINOUH"))
-            sendNotif.onSuccess {
+
                 call.respondText("Hello World!")
-            }.onFailure {
-                call.respond(HttpStatusCode.InternalServerError,it.message?:"Could not send notification")
-            }
+
         }
 
         messagesRouting(module)
