@@ -23,7 +23,6 @@ class ProcessIncomingWhatsappMessages(
         val aiResponse = agent.run(clientPhoneNumber, message, history)
 
         // 3. Save AI Response & Send to WhatsApp concurrently
-        // This cuts latency by ~50% for this step
         val saveJob = async {
             chatRepository.messages.insert("assistant", aiResponse, clientPhoneNumber)
         }

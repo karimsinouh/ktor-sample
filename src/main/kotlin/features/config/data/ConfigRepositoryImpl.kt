@@ -17,7 +17,7 @@ class ConfigRepositoryImpl: ConfigRepository {
             "maintenanceMode" to configs.maintenanceMode
         )
         try {
-            configsDocument.set(fields).get()
+            configsDocument.update(fields).get()
         }catch (e: Exception){
             throw e
         }
@@ -29,7 +29,7 @@ class ConfigRepositoryImpl: ConfigRepository {
             "geminiKey" to newKey,
         )
         try {
-            configsDocument.set(fields).get()
+            configsDocument.update(fields).get()
         }catch (e: Exception){
             throw e
         }
