@@ -2,6 +2,7 @@ package com.example.features.config.data
 
 import com.example.features.config.domain.ConfigRepository
 import com.example.features.config.model.ConfigModel
+import com.example.main
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -22,7 +23,11 @@ class GlobalConfigsHolder(private val configRepository: ConfigRepository) {
     }
 
     fun updateInMemory(newConfigs: ConfigModel){
-        configs=newConfigs
+        configs=configs?.copy(
+            trainingPrompt = newConfigs.trainingPrompt,
+            messagesLimit = newConfigs.messagesLimit,
+            maintenanceMode = newConfigs.maintenanceMode
+        )
     }
 
     fun updateInMemory(apiKey: String){
